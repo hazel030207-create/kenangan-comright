@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memory Gallery - COMRIGHT 379 Legacy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        :root { 
+            --gold: #d4af37; 
+            --gold-light: #f1d592;
+            --bg: #020202; 
+            --card: rgba(25, 25, 25, 0.4); 
+            --glow: rgba(212, 175, 55, 0.5);
+        }
+
+        html { scroll-behavior: smooth; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #1a1508 0%, #020202 100%);
+            min-height: 100vh;
+        }
+
+        /* --- PRELOADER --- */
+        #page-loader {
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.8s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+        .loader-logo {
+            font-family: 'Playfair Display'; font-size: 24px; color: var(--gold);
+            letter-spacing: 5px; margin-bottom: 20px; animation: pulse 2s infinite;
+        }
+        .loader-bar { width: 150px; height: 1px; background: rgba(212,175,55,0.1); position: relative; overflow: hidden; }
+        .loader-bar::after {
+            content: ''; position: absolute; left: -100%; width: 100%; height: 100%;
+            background: var(--gold); animation: loading 1.5s infinite;
+        }
+        @keyframes loading { 100% { left: 100%; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            position: fixed; top: 0; width: 100%; height: 80px;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(25px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 30px; z-index: 1000; border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .menu-dots { cursor: pointer; display: flex; flex-direction: column; gap: 6px; width: 30px; }
+        .dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 10px var(--glow); }
+
+        .music-controller {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            padding: 8px 15px; border-radius: 40px; transition: 0.4s;
+            background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .visualizer-bars { display: flex; align-items: flex-end; gap: 3px; height: 14px; }
+        .visualizer-bars span { width: 3px; height: 4px; background: #444; border-radius: 1px; }
+        
+        /* Status Playing */
+        .is-playing .visualizer-bars span {
+            background: var(--gold); box-shadow: 0 0 12px var(--glow);
+            animation: barAnimate 0.8s infinite alternate ease-in-out;
+        }
+        .is-playing .visualizer-bars span:nth-child(1) { animation-delay: 0.1s; }
+        .is-playing .visualizer-bars span:nth-child(2) { animation-delay: 0.3s; }
+        .is-playing .visualizer-bars span:nth-child(3) { animation-delay: 0.2s; }
+        .is-playing .visualizer-bars span:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes barAnimate { 0% { height: 20%; } 100% { height: 100%; } }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; top: 0; left: -100%; width: 320px; height: 100%;
+            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(30px);
+            border-right: 1px solid rgba(212, 175, 55, 0.3); z-index: 3000; 
+            transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 60px 40px;
+        }
+        .sidebar.active { left: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); opacity: 0; visibility: hidden; z-index: 2999; transition: 0.6s; backdrop-filter: blur(8px); }
+        .overlay.active { opacity: 1; visibility: visible; }
+        
+        .nav-links { list-style: none; padding: 0; margin-top: 50px; }
+        .nav-links li a { 
+            color: #ccc; text-decoration: none; display: flex; align-items: center; gap: 20px;
+            padding: 18px 0; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.4s;
+        }
+        .nav-links li a:hover { color: var(--gold); transform: translateX(10px); }
+
+        /* --- GALLERY --- */
+        .content-body { padding-top: 120px; padding-bottom: 100px; }
+        .header-text { text-align: center; margin-bottom: 60px; }
+        .header-text h1 { 
+            font-family: 'Playfair Display'; font-size: 48px; margin: 0;
+            background: linear-gradient(180deg, #fff 30%, var(--gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+        
+        .gallery-container { 
+            display: grid; grid-template-columns: 1fr; gap: 40px; 
+            padding: 0 20px; max-width: 600px; margin: auto; 
+        }
+        .memory-card { 
+            background: var(--card); border-radius: 20px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.5s;
+            opacity: 0; transform: translateY(20px);
+            position: relative;
+        }
+        .memory-card.reveal { opacity: 1; transform: translateY(0); }
+
+        .photo-wrapper img { width: 100%; height: auto; display: block; }
+        .moment-desc { padding: 25px; }
+        .date { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; display: block; }
+        .text { font-family: 'Playfair Display'; font-style: italic; font-size: 18px; color: #eee; }
+
+        /* --- CONTROLS --- */
+        .scroll-nav-container {
+            position: fixed; bottom: 30px; left: 25px;
+            display: flex; flex-direction: column; gap: 12px; z-index: 1000;
+        }
+        .luxury-btn {
+            width: 50px; height: 50px; background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%; color: var(--gold); display: flex;
+            align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
+        }
+        .scroll-active { border-color: #fff; box-shadow: 0 0 20px var(--glow); animation: pulseBtn 1.5s infinite; }
+        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        #admin-post-btn {
+            position: fixed; bottom: 30px; right: 25px; background: var(--gold); 
+            width: 55px; height: 55px; border-radius: 50%; display: none; 
+            align-items: center; justify-content: center; font-size: 24px; color: black; z-index: 1000;
+            cursor: pointer; box-shadow: 0 0 15px var(--glow);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="page-loader"><div class="loader-logo">LEGACY</div><div class="loader-bar"></div></div>
+    <audio id="bg-music" loop preload="auto"><source src="kisah klasik.mp3" type="audio/mpeg"></audio>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <header>
+        <div class="header-left">
+            <div class="menu-dots" onclick="openSidebar()"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div id="header-music-ctrl" class="music-controller" onclick="toggleMusic()">
+                <div class="visualizer-bars"><span></span><span></span><span></span><span></span></div>
+                <span id="music-text-header" style="font-size: 9px; font-weight: 800; color: #555;">OFF</span>
+            </div>
+        </div>
+        <div style="text-align: center;"><p style="color: var(--gold); font-weight: 800; font-size: 12px; letter-spacing: 3px; margin: 0;">COMRIGHT</p></div>
+        <div style="width: 40px;"></div>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-links">
+            <li><a href="main.html"><span>01</span> 👥 The Alumni</a></li>
+            <li><a href="galeri.html" style="color: var(--gold);"><span>02</span> 📸 Memory Gallery</a></li>
+            <li><a href="video.html"><span>03</span> 🎬 Video Archives</a></li>
+            <li><a href="pesan.html"><span>04</span> 💌 Messages</a></li>
+        </ul>
+    </nav>
+
+    <div class="content-body">
+        <div class="header-text"><h1 id="title-admin" onclick="activateAdmin()">Golden Memories</h1></div>
+        <div class="gallery-container" id="gallery"></div>
+    </div>
+
+    <div class="scroll-nav-container">
+        <div class="luxury-btn" onclick="toggleAutoScroll('up')"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(180deg);"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></div>
+        <div class="luxury-btn" id="autoscroll-btn" onclick="toggleAutoScroll('down')"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></div>
+    </div>
+
+    <label id="admin-post-btn">+ <input type="file" id="input-file" style="display:none;" accept="image/*"></label>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALj_Gcwf_jwow1MPVZ0_xpTvvyB_bwEXo",
+            authDomain: "comright379.firebaseapp.com",
+            databaseURL: "https://comright379-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "comright379",
+            storageBucket: "comright379.firebasestorage.app",
+            messagingSenderId: "602850111912",
+            appId: "1:602850111912:web:1372097fa168af0668ad9d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const audio = document.getElementById('bg-music');
+        let isAdmin = false;
+
+        /* --- LOGIKA MUSIK SEAMLESS (PENTING!) --- */
+        function toggleMusic() { 
+            if (audio.paused) { 
+                audio.play().then(() => {
+                    localStorage.setItem('musicStatus', 'playing');
+                    updateMusicUI(true);
+                });
+            } else { 
+                audio.pause(); 
+                localStorage.setItem('musicStatus', 'paused'); 
+                updateMusicUI(false); 
+            } 
+        }
+
+        function updateMusicUI(p) { 
+            const hText = document.getElementById('music-text-header');
+            const hBtn = document.getElementById('header-music-ctrl');
+            if(hBtn) hBtn.classList.toggle('is-playing', p);
+            if(hText) {
+                hText.innerText = p ? "ON" : "OFF"; 
+                hText.style.color = p ? "var(--gold)" : "#555";
+            }
+        }
+
+        // Jalankan saat HTML siap
+        window.addEventListener('DOMContentLoaded', () => {
+            const status = localStorage.getItem('musicStatus');
+            const savedTime = localStorage.getItem('musicTime');
+
+            if (savedTime) {
+                audio.currentTime = parseFloat(savedTime);
+            }
+
+            if (status === 'playing') {
+                audio.play().then(() => updateMusicUI(true)).catch(() => {
+                    // Jika diblokir browser, tunggu interaksi pertama
+                    document.body.addEventListener('click', () => {
+                        if(localStorage.getItem('musicStatus') === 'playing' && audio.paused){
+                            audio.play().then(() => updateMusicUI(true));
+                        }
+                    }, { once: true });
+                });
+            }
+        });
+
+        // Simpan posisi lagu setiap 0.1 detik agar akurat saat pindah halaman
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 100);
+
+        /* --- ADMIN LOGIC --- */
+        let adminClick = 0;
+        function activateAdmin() {
+            if(++adminClick === 5) { 
+                isAdmin = true;
+                document.getElementById('admin-post-btn').style.display = 'flex'; 
+                document.getElementById('title-admin').innerText = "Admin Gallery";
+                alert("MODE ADMIN AKTIF: Tahan lama pada foto untuk menghapusnya."); 
+            }
+        }
+
+        function deletePhoto(id) {
+            if(!isAdmin) return;
+            if(confirm("Apakah Anda yakin ingin menghapus foto kenangan ini selamanya?")) {
+                db.ref('kenangan/' + id).remove()
+                .then(() => alert("Terhapus."))
+                .catch(err => alert("Gagal hapus: " + err.message));
+            }
+        }
+
+        /* --- UPLOAD LOGIC --- */
+        document.getElementById('input-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const desc = prompt("Deskripsi:");
+            if (desc === null) return;
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const today = new Intl.DateTimeFormat('id-ID', options).format(new Date());
+            
+            document.getElementById('page-loader').style.display = 'flex';
+            document.getElementById('page-loader').style.opacity = '1';
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                db.ref('kenangan').push({ url: event.target.result, desc: desc, date: today })
+                .then(() => location.reload());
+            };
+            reader.readAsDataURL(file);
+        });
+
+        /* --- RENDER DATA --- */
+        function renderGallery() {
+            db.ref('kenangan').on('value', (snapshot) => {
+                const container = document.getElementById('gallery');
+                container.innerHTML = "";
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).reverse().forEach(key => {
+                        const item = data[key];
+                        const card = document.createElement('div');
+                        card.className = "memory-card";
+                        
+                        let timer;
+                        card.addEventListener('touchstart', () => { if(isAdmin) timer = setTimeout(() => deletePhoto(key), 800); });
+                        card.addEventListener('touchend', () => { clearTimeout(timer); });
+                        card.addEventListener('mousedown', () => { if(isAdmin) timer = setTimeout(() => deletePhoto(key), 800); });
+                        card.addEventListener('mouseup', () => { clearTimeout(timer); });
+
+                        card.innerHTML = `
+                            <div class="photo-wrapper"><img src="${item.url}" loading="lazy"></div>
+                            <div class="moment-desc">
+                                <span class="date">${item.date || ''}</span>
+                                <div class="text">"${item.desc || ''}"</div>
+                            </div>`;
+                        container.appendChild(card);
+                    });
+                    setTimeout(revealCards, 100);
+                }
+                document.getElementById('page-loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('page-loader').style.display = 'none', 800);
+            });
+        }
+
+        /* --- UI HELPER --- */
+        function revealCards() { document.querySelectorAll('.memory-card').forEach(c => { if(c.getBoundingClientRect().top < window.innerHeight) c.classList.add('reveal'); }); }
+        
+        let scrollInterval;
+        function toggleAutoScroll(dir) {
+            if(scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; return; }
+            scrollInterval = setInterval(() => { window.scrollBy(0, dir === 'down' ? 1 : -1); }, 7);
+        }
+
+        window.onload = () => {
+            renderGallery();
+        };
+        
+        window.addEventListener('scroll', revealCards);
+        function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
+    </script>
+</body>
+</html>
