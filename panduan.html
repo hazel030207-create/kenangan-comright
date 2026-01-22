@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manuskrip Agung - Panduan COMRIGHT 379</title>
+    <title>Manuskrip Agung - Elegi Santri Pembangkang</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,900&family=Poppins:wght@300;400;500;600&family=Great+Vibes&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --paper-bg: #fdf5e6;
             --royal-red: #800000;
+            --gold: #d4af37;
         }
 
         body {
@@ -20,247 +21,248 @@
             align-items: center;
             min-height: 100vh;
             background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            overflow-x: hidden;
         }
 
+        /* MODAL OVERLAY */
+        #music-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-content {
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--gold);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            border-radius: 2px;
+            box-shadow: 0 0 100px rgba(212, 175, 55, 0.1);
+        }
+
+        /* MANUSCRIPT CONTENT */
         .manuscript {
             max-width: 1100px; 
             width: 100%;
             background: var(--paper-bg);
-            padding: 60px 80px;
+            padding: 70px 90px;
             position: relative;
-            box-shadow: 0 0 80px rgba(0,0,0,0.9);
-            border: 1px solid #d4af37;
-            background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
+            box-shadow: 0 0 100px rgba(0,0,0,0.95);
+            border: 1px solid var(--gold);
             box-sizing: border-box;
             border-radius: 2px;
+            overflow: hidden;
+            background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
         }
+
+        .manuscript > * { position: relative; z-index: 2; }
 
         .royal-seal {
             position: absolute;
             top: 30px;
-            right: 40px;
-            width: 100px;
-            height: 100px;
+            left: 30px;
+            width: 90px;
+            height: 90px;
             background: #a31a1a;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+            box-shadow: 5px 5px 20px rgba(0,0,0,0.5);
             border: 4px double #5c0a0a;
-        }
-
-        .royal-seal span {
-            color: #d4af37;
-            font-family: 'Cinzel Decorative';
-            font-size: 18px;
-            text-align: center;
-            line-height: 1;
+            transform: rotate(-15deg);
+            opacity: 0.9;
         }
 
         header {
-            text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid #d4af37;
-            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px double var(--gold);
+            padding-bottom: 30px;
+            margin-bottom: 50px;
+            gap: 30px;
         }
+
+        .title-block { flex: 1; text-align: left; }
 
         .main-title {
             font-family: 'Cinzel Decorative', serif;
-            font-size: 32px;
+            font-size: 38px;
             color: var(--royal-red);
-            margin: 10px 0;
+            margin: 5px 0;
+            letter-spacing: 2px;
         }
 
-        /* Narasi Kenangan - Menggunakan 2 Kolom agar Terlihat seperti Kitab Lebar */
+        .header-photo-container {
+            width: 160px;
+            height: 200px;
+            border: 4px solid #3e2723;
+            padding: 6px;
+            background: #fff;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.3);
+            transform: rotate(4deg);
+        }
+
+        .header-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(50%) contrast(110%);
+        }
+
         .memoir-section {
             font-family: 'Playfair Display', serif;
-            color: #3e2723;
-            line-height: 1.8;
+            color: #2c1e1c;
+            line-height: 2.2;
             text-align: justify;
-            margin-bottom: 40px;
-            font-size: 15px;
+            margin-bottom: 50px;
+            font-size: 17px;
             columns: 2; 
-            column-gap: 50px;
+            column-gap: 60px;
         }
 
-        .memoir-section p {
-            margin: 0 0 20px 0;
-            text-indent: 30px;
-        }
+        .memoir-section p { margin: 0 0 30px 0; text-indent: 50px; }
 
         .highlight-text {
             color: var(--royal-red);
-            font-weight: bold;
+            font-weight: 900;
             font-style: italic;
-        }
-
-        .feature-container {
-            border-top: 1px solid rgba(139, 69, 19, 0.2);
-            padding-top: 30px;
-            margin-bottom: 50px;
-        }
-
-        .guide-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px;
-        }
-
-        .guide-block {
-            text-align: center;
-            padding: 10px;
-        }
-
-        .icon-box { font-size: 24px; margin-bottom: 10px; }
-
-        .content-box h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .content-box p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 11px;
-            color: #4b3621;
-            line-height: 1.4;
+            border-bottom: 1px dashed var(--royal-red);
         }
 
         .scroll-footer {
             text-align: center;
-            border-top: 1px solid #d4af37;
-            padding-top: 30px;
+            border-top: 1px solid var(--gold);
+            padding-top: 40px;
         }
 
         .signature-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 100px;
-            margin: 20px 0;
+            margin: 30px 0;
         }
 
         .signature {
             font-family: 'Great Vibes', cursive;
-            font-size: 32px;
+            font-size: 52px;
             color: #1a1a1a;
-        }
-
-        .role-title {
-            font-family: 'Poppins';
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8b4513;
         }
 
         .btn-back {
             font-family: 'Cinzel Decorative', serif;
             text-decoration: none;
             color: #1a1a1a;
-            padding: 12px 40px;
+            padding: 12px 35px;
             border: 2px solid #1a1a1a;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             display: inline-block;
-            margin-top: 20px;
-            transition: 0.3s;
-        }
-
-        .btn-back:hover {
-            background: #1a1a1a;
-            color: #d4af37;
+            transition: 0.4s;
+            letter-spacing: 2px;
         }
 
         @media (max-width: 768px) {
-            .manuscript { padding: 40px 20px; width: 95%; }
-            .memoir-section { columns: 1; font-size: 14px; }
-            .guide-grid { grid-template-columns: repeat(2, 1fr); }
-            .signature-container { gap: 30px; flex-direction: row; }
-            .signature { font-size: 24px; }
+            header { flex-direction: column; text-align: center; }
+            .manuscript { padding: 40px 25px; }
+            .memoir-section { columns: 1; }
+            .signature-container { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
+    <div id="music-modal">
+        <div class="modal-content">
+            <h2 style="font-family: 'Cinzel Decorative'; color: var(--gold); font-size: 26px; letter-spacing: 2px;">Tawassul di Ambang Kenangan</h2>
+            <p style="font-family: 'Playfair Display'; color: #d1d1d1; font-style: italic; line-height: 1.8; font-size: 19px; margin-top: 20px;">
+                "Sejenak, mari kita tundukkan kepala dan lepaskan segala hiruk pikuk dunia... <br>
+                Basahi bibir dengan doa tulus untuk almarhumah Umi tercinta. <br>
+                Semoga cahaya doa ini sampai ke haribaan-Nya sebagai bakti kita yang tak sempat purna."
+            </p>
+            <button class="btn-start" onclick="startExperience()" style="padding: 18px 50px; border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.05); color: var(--gold); cursor: pointer; letter-spacing: 3px; font-family: 'Poppins'; margin-top: 40px; text-transform: uppercase; font-size: 11px; transition: 0.5s;">
+                Kirim Doa untuk Alm. Umi & Buka Manuskrip
+            </button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="gugur bunga.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="manuscript">
         <div class="royal-seal">
-            <span>SIGIL<br>379</span>
+            <span style="color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 16px; text-align: center;">SIGIL<br>379</span>
         </div>
 
         <header>
-            <p style="font-family: 'Poppins'; font-size: 10px; letter-spacing: 4px; color: #8b4513; text-transform: uppercase; margin: 0;">Warkah Perpisahan</p>
-            <h1 class="main-title">Kenangan & Titah Situs</h1>
+            <div class="title-block">
+                <p style="font-family: 'Poppins'; font-size: 11px; letter-spacing: 6px; color: #8b4513; text-transform: uppercase; margin: 0; font-weight: 600;">Arsip Kerinduan & Penebusan Dosa</p>
+                <h1 class="main-title">Elegi Santri Pembangkang</h1>
+                <p style="font-family: 'Great Vibes'; font-size: 26px; color: #3e2723; margin: 5px 0;">"Tentang jejak yang tertinggal di sela doa-doa Abi..."</p>
+            </div>
+            
+            <div class="header-photo-container">
+                <img src="foto abi.jpeg" alt="Foto Abi" class="header-photo">
+            </div>
         </header>
 
         <section class="memoir-section">
             <p>
-                Rasanya baru kemarin kita duduk bersama di teras asrama, mencium bau tanah setelah hujan turun di halaman pondok. Masa-masa di pesantren adalah babak kehidupan yang tidak akan pernah lekang oleh waktu. COMRIGHT 379 bukan sekadar deretan angka, ia adalah simbol dari keringat, tawa, dan air mata yang kita lalui bersama.
+                Angin pesantren malam itu seolah berbisik, membawa kembali aroma tanah basah dan sisa-sisa asap tembakau yang kita sembunyikan dengan tangan gemetar di balik lemari lapuk asrama. Kita adalah barisan pendosa muda—yang dengan congkaknya bertaruh nasib demi sebatang rokok dan selipan handphone di balik lipatan sarung kumal. <span class="highlight-text">Masihkah kalian merasakan debar jantung itu?</span> Ketika langkah kaki keamanan mengepung sunyi, dan kita hanya bisa tertawa lirih dalam ketakutan yang paling jujur.
             </p>
+
             <p>
-                Namun kini, waktu telah membawa kita pada titik di mana kita harus melangkah tanpa bimbingan langsung para Guru. <span class="highlight-text">Kita berjalan sendiri</span>, menapaki takdir masing-masing di bawah langit yang berbeda. Tiada lagi teguran di lorong asrama, tiada lagi bimbingan di setiap hembusan napas pengabdian. 
+                Ingatkah kalian pada Aula Balai Pertemuan itu? Di balik pintu kamar mandi yang terkunci, kita terhipnotis layar kecil, bertarung di <span class="highlight-text">Land of Dawn</span> sembari menghisap nikotin dalam-dalam. Kita merasa hebat, merasa menang, tanpa sadar bahwa di saat yang sama, di kediamannya, seorang Ibu sedang bergelut dengan rasa sakit yang tak terlukiskan. <span class="highlight-text">Umi...</span> sosok yang sabar menahan perihnya penyakit yang kian hari kian menggerogoti tubuh rentanya, sementara kita justru sibuk mencuri-curi waktu untuk sebuah kesenangan semu.
             </p>
+
             <p>
-                Di kejauhan, bayang-bayang kesedihan tampak menyelimuti wajah para Guru. Ada rindu yang tak terucap, ada doa yang terus mengalir dalam diam mereka. <span class="highlight-text">Abi pun terdiam dalam sedu-sedannya</span>; sebuah kesedihan mendalam seorang ayah yang melepaskan anak-anaknya ke medan juang yang sesungguhnya. Hatinya berat, melihat burung-burung kecil yang dulu ia suapi dengan ilmu, kini terbang menjauh meninggalkan sangkar.
+                Betapa hancurnya hati ini ketika mengingat masa-masa Umi sakit-sakitan. Wajah pucatnya yang tetap dipaksakan tersenyum saat menanyakan kabar kita di pondok adalah tamparan paling keras. Dan ketika takdir mencapai titik akhirnya, saat bendera kuning berkibar dan tanah merah basah menimbun raga malaikat tanpa sayap itu... dunia kita seolah runtuh. <span class="highlight-text">Umi telah berpulang,</span> membawa pergi separuh cahaya dunia kita, menyisakan penyesalan yang kini hanya bisa kita bayar dengan linangan air mata di atas sajadah.
             </p>
+
             <p>
-                Meskipun kita kini melangkah tanpa mereka di sisi, mari kita buktikan bahwa didikan mereka tidak sia-sia. Website ini adalah saksi bisu bahwa meski jarak memisahkan dan Guru tak lagi di depan mata, persaudaraan kita tetap teguh, dan ajaran mereka tetap menjadi kompas dalam setiap langkah liar kita.
+                Kepedihan itu kian nyata saat kita melihat Abi. Satu-satunya tiang yang tersisa, namun kini tampak begitu rapuh dalam kesendiriannya. Pernahkah kita bayangkan Abi menangis dalam sujudnya? Menanggung beban rindu pada Umi sekaligus menanggung beban malu atas kenakalan kita. <span class="highlight-text">Gerbang Hitam di area belakang</span> kini bukan lagi jalur pelarian kita, melainkan gerbang ingatan yang mengingatkan betapa seringnya kita melangkah keluar hanya untuk mengecewakan mereka yang mencintai kita tanpa batas.
+            </p>
+
+            <p>
+                Masihkah tersisa rasa hormat pada sosok-sosok yang menempa kita? <span class="highlight-text">Pak Hafidz</span> dan para asatidz yang dulu kita benci karena "kekasarannya". Kini kita mengerti, mereka hanya ingin kita menjadi manusia, bukan sekadar tubuh yang bernapas tanpa arah. Sebagian dari mereka telah wisuda, menjemput takdir barunya, sementara kita masih di sini, meratapi masa muda yang terbakar asap rokok di kamar mandi aula.
+            </p>
+
+            <p>
+                Website ini adalah monumen penyesalan kita. Di setiap baris kodenya, ada doa yang kita selipkan untuk Umi yang telah tenang di surga, dan untuk Abi yang kekuatannya menjadi nyawa bagi kita semua. <span class="highlight-text">Teguran mereka dulu adalah cinta yang gagal kita pahami.</span> Kini, saat suara Umi tak lagi terdengar memanggil nama kita, hanya sunyi yang tersisa—sunyi yang memaksa kita untuk pulang, bertaubat, dan menjadi santri yang sebenarnya.
             </p>
         </section>
-
-        <div class="feature-container">
-            <div class="guide-grid">
-                <div class="guide-block">
-                    <div class="icon-box">🎻</div>
-                    <div class="content-box">
-                        <h2>Alunan Musik</h2>
-                        <p>Lagu "Kisah Klasik" menemanimu. Ketuk layar untuk memulai.</p>
-                    </div>
-                </div>
-                <div class="guide-block">
-                    <div class="icon-box">🏰</div>
-                    <div class="content-box">
-                        <h2>Kamar Kenangan</h2>
-                        <p>Gunakan menu sidebar untuk akses galeri & video.</p>
-                    </div>
-                </div>
-                <div class="guide-block">
-                    <div class="icon-box">📜</div>
-                    <div class="content-box">
-                        <h2>Cari Kawan</h2>
-                        <p>Fitur search untuk mencari nama kawan secara instan.</p>
-                    </div>
-                </div>
-                <div class="guide-block">
-                    <div class="icon-box">✒️</div>
-                    <div class="content-box">
-                        <h2>Update Foto</h2>
-                        <p>Perbarui citra dirimu melalui tombol Update Photo.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="scroll-footer">
             <div class="signature-container">
                 <div class="signature-wrapper">
-                    <div class="signature">Ahmad Syahid</div>
-                    <div class="role-title">Ketua Angkatan</div>
-                </div>
-                <div style="font-family: 'Cinzel Decorative'; opacity: 0.3;">✖</div>
-                <div class="signature-wrapper">
-                    <div class="signature">Haeri Ibanes</div>
-                    <div class="role-title">Admin</div>
+                    <div class="signature">Comright~379</div>
+                    <div style="font-family: 'Poppins'; font-size: 11px; text-transform: uppercase; color: #8b4513; letter-spacing: 5px; margin-top: -10px;">The Legacy of Rebels</div>
                 </div>
             </div>
-            
-            <div class="back-container">
-                <a href="main.html" class="btn-back">KEMBALI</a>
-            </div>
+            <a href="main.html" class="btn-back">KEMBALI KE GERBANG UTAMA</a>
         </div>
     </div>
 
+    <script>
+        function startExperience() {
+            const modal = document.getElementById('music-modal');
+            modal.style.transition = '2s';
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 2000);
+            document.getElementById('bgMusic').play();
+        }
+    </script>
 </body>
 </html>
