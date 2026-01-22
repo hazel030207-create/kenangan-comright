@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
     <title>Manuskrip Agung - Elegi Santri Pembangkang</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,900&family=Poppins:wght@300;400;500;600&family=Great+Vibes&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +21,7 @@
             align-items: center;
             min-height: 100vh;
             background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            overflow-x: hidden;
+            transition: all 1s ease-in-out;
         }
 
         /* MODAL OVERLAY */
@@ -53,7 +53,7 @@
         /* MANUSCRIPT CONTENT */
         .manuscript {
             max-width: 1100px; 
-            width: 100%;
+            width: 1100px; /* Dikunci agar tidak fleksibel saat mode desktop aktif */
             background: var(--paper-bg);
             padding: 70px 90px;
             position: relative;
@@ -63,6 +63,7 @@
             border-radius: 2px;
             overflow: hidden;
             background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
+            transition: transform 1s ease;
         }
 
         .manuscript > * { position: relative; z-index: 2; }
@@ -173,12 +174,13 @@
             letter-spacing: 2px;
         }
 
-        @media (max-width: 768px) {
-            header { flex-direction: column; text-align: center; }
-            .manuscript { padding: 40px 25px; }
-            .memoir-section { columns: 1; }
-            .signature-container { flex-direction: column; }
+        /* Paksa tampilan desktop meskipun di mobile setelah start */
+        body.desktop-mode .manuscript {
+            width: 1100px !important;
+            transform: scale(0.35); /* Menyesuaikan skala agar pas di layar HP */
+            transform-origin: center top;
         }
+
     </style>
 </head>
 <body>
@@ -188,20 +190,19 @@
             <h2 style="font-family: 'Cinzel Decorative'; color: var(--gold); font-size: 26px; letter-spacing: 2px;">Tawassul di Ambang Kenangan</h2>
             <p style="font-family: 'Playfair Display'; color: #d1d1d1; font-style: italic; line-height: 1.8; font-size: 19px; margin-top: 20px;">
                 "Sejenak, mari kita tundukkan kepala dan lepaskan segala hiruk pikuk dunia... <br>
-                Basahi bibir dengan doa tulus untuk almarhumah Umi tercinta. <br>
-                Semoga cahaya doa ini sampai ke haribaan-Nya sebagai bakti kita yang tak sempat purna."
+                Basahi bibir dengan doa tulus untuk almarhumah Umi tercinta."
             </p>
             <button class="btn-start" onclick="startExperience()" style="padding: 18px 50px; border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.05); color: var(--gold); cursor: pointer; letter-spacing: 3px; font-family: 'Poppins'; margin-top: 40px; text-transform: uppercase; font-size: 11px; transition: 0.5s;">
-                Kirim Doa untuk Alm. Umi & Buka Manuskrip
+                Hidupkan Musik & Buka Manuskrip
             </button>
         </div>
     </div>
 
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop preload="auto">
         <source src="gugur bunga.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="manuscript">
+    <div class="manuscript" id="main-content">
         <div class="royal-seal">
             <span style="color: var(--gold); font-family: 'Cinzel Decorative'; font-size: 16px; text-align: center;">SIGIL<br>379</span>
         </div>
@@ -220,36 +221,25 @@
 
         <section class="memoir-section">
             <p>
-                Angin pesantren malam itu seolah berbisik, membawa kembali aroma tanah basah dan sisa-sisa asap tembakau yang kita sembunyikan dengan tangan gemetar di balik lemari lapuk asrama. Kita adalah barisan pendosa muda—yang dengan congkaknya bertaruh nasib demi sebatang rokok dan selipan handphone di balik lipatan sarung kumal. <span class="highlight-text">Masihkah kalian merasakan debar jantung itu?</span> Ketika langkah kaki keamanan mengepung sunyi, dan kita hanya bisa tertawa lirih dalam ketakutan yang paling jujur.
+                Angin pesantren malam itu seolah berbisik, membawa kembali aroma tanah basah dan sisa-sisa asap tembakau yang kita sembunyikan dengan tangan gemetar di balik lemari lapuk asrama. <span class="highlight-text">Masihkah kalian merasakan debar jantung itu?</span>
             </p>
-
             <p>
-                Ingatkah kalian pada Aula Balai Pertemuan itu? Di balik pintu kamar mandi yang terkunci, kita terhipnotis layar kecil, bertarung di <span class="highlight-text">Land of Dawn</span> sembari menghisap nikotin dalam-dalam. Kita merasa hebat, merasa menang, tanpa sadar bahwa di saat yang sama, di kediamannya, seorang Ibu sedang bergelut dengan rasa sakit yang tak terlukiskan. <span class="highlight-text">Umi...</span> sosok yang sabar menahan perihnya penyakit yang kian hari kian menggerogoti tubuh rentanya, sementara kita justru sibuk mencuri-curi waktu untuk sebuah kesenangan semu.
+                Ingatkah kalian pada Aula Balai Pertemuan itu? Di balik pintu kamar mandi yang terkunci, kita terhipnotis layar kecil, bertarung di <span class="highlight-text">Land of Dawn</span>. <span class="highlight-text">Umi...</span> sosok yang sabar menahan perihnya penyakit, sementara kita sibuk dengan kesenangan semu.
             </p>
-
             <p>
-                Betapa hancurnya hati ini ketika mengingat masa-masa Umi sakit-sakitan. Wajah pucatnya yang tetap dipaksakan tersenyum saat menanyakan kabar kita di pondok adalah tamparan paling keras. Dan ketika takdir mencapai titik akhirnya, saat bendera kuning berkibar dan tanah merah basah menimbun raga malaikat tanpa sayap itu... dunia kita seolah runtuh. <span class="highlight-text">Umi telah berpulang,</span> membawa pergi separuh cahaya dunia kita, menyisakan penyesalan yang kini hanya bisa kita bayar dengan linangan air mata di atas sajadah.
+                Betapa hancurnya hati ini ketika mengingat masa-masa Umi sakit-sakitan. <span class="highlight-text">Umi telah berpulang,</span> membawa pergi separuh cahaya dunia kita.
             </p>
-
             <p>
-                Kepedihan itu kian nyata saat kita melihat Abi. Satu-satunya tiang yang tersisa, namun kini tampak begitu rapuh dalam kesendiriannya. Pernahkah kita bayangkan Abi menangis dalam sujudnya? Menanggung beban rindu pada Umi sekaligus menanggung beban malu atas kenakalan kita. <span class="highlight-text">Gerbang Hitam di area belakang</span> kini bukan lagi jalur pelarian kita, melainkan gerbang ingatan yang mengingatkan betapa seringnya kita melangkah keluar hanya untuk mengecewakan mereka yang mencintai kita tanpa batas.
+                Kepedihan itu kian nyata saat kita melihat Abi. <span class="highlight-text">Gerbang Hitam di area belakang</span> kini bukan lagi jalur pelarian kita, melainkan gerbang ingatan.
             </p>
-
             <p>
-                Masihkah tersisa rasa hormat pada sosok-sosok yang menempa kita? <span class="highlight-text">Pak Hafidz</span> dan para asatidz yang dulu kita benci karena "kekasarannya". Kini kita mengerti, mereka hanya ingin kita menjadi manusia, bukan sekadar tubuh yang bernapas tanpa arah. Sebagian dari mereka telah wisuda, menjemput takdir barunya, sementara kita masih di sini, meratapi masa muda yang terbakar asap rokok di kamar mandi aula.
-            </p>
-
-            <p>
-                Website ini adalah monumen penyesalan kita. Di setiap baris kodenya, ada doa yang kita selipkan untuk Umi yang telah tenang di surga, dan untuk Abi yang kekuatannya menjadi nyawa bagi kita semua. <span class="highlight-text">Teguran mereka dulu adalah cinta yang gagal kita pahami.</span> Kini, saat suara Umi tak lagi terdengar memanggil nama kita, hanya sunyi yang tersisa—sunyi yang memaksa kita untuk pulang, bertaubat, dan menjadi santri yang sebenarnya.
+                Website ini adalah monumen penyesalan kita. <span class="highlight-text">Teguran mereka dulu adalah cinta yang gagal kita pahami.</span> Kini, saat suara Umi tak lagi terdengar, hanya sunyi yang memaksa kita untuk pulang.
             </p>
         </section>
 
         <div class="scroll-footer">
             <div class="signature-container">
-                <div class="signature-wrapper">
-                    <div class="signature">Comright~379</div>
-                    <div style="font-family: 'Poppins'; font-size: 11px; text-transform: uppercase; color: #8b4513; letter-spacing: 5px; margin-top: -10px;">The Legacy of Rebels</div>
-                </div>
+                <div class="signature">Comright~379</div>
             </div>
             <a href="main.html" class="btn-back">KEMBALI KE GERBANG UTAMA</a>
         </div>
@@ -258,10 +248,28 @@
     <script>
         function startExperience() {
             const modal = document.getElementById('music-modal');
+            const music = document.getElementById('bgMusic');
+            const viewport = document.getElementById('viewport-meta');
+
+            // 1. Ubah Viewport Secara Paksa ke Skala Desktop (lebar 1200px)
+            viewport.setAttribute('content', 'width=1200');
+
+            // 2. Masuk ke Fullscreen (Opsional, agar lebih dramatis)
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+
+            // 3. Mainkan Musik
+            if (music) {
+                music.play();
+            }
+
+            // 4. Animasi Modal Hilang
             modal.style.transition = '2s';
             modal.style.opacity = '0';
-            setTimeout(() => { modal.style.display = 'none'; }, 2000);
-            document.getElementById('bgMusic').play();
+            setTimeout(() => { 
+                modal.style.display = 'none'; 
+            }, 2000);
         }
     </script>
 </body>
