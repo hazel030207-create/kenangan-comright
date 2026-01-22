@@ -13,11 +13,20 @@
         :root { --gold: #d4af37; --bg-dark: #050505; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Layout Fix: Mencegah layar geser-geser tidak jelas di Android */
         html, body { height: 100%; width: 100%; background: var(--bg-dark); color: white; overflow: hidden; position: fixed; }
         body { display: flex; flex-direction: column; }
 
-        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; background: #000; flex-shrink: 0; }
+        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; background: #000; flex-shrink: 0; position: relative; }
+
+        /* --- AUDIO NAV SEBELAH KIRI --- */
+        .audio-nav { position: absolute; left: 70px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 15px; }
+        .bar { width: 3px; background: var(--gold); border-radius: 1px; height: 3px; }
+        .bar.animate { animation: bounce 0.8s infinite alternate; }
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+        .bar:nth-child(4) { animation-delay: 0.6s; }
+        @keyframes bounce { 0% { height: 3px; } 100% { height: 15px; } }
 
         /* --- CHAT AREA --- */
         #chat-container { 
@@ -41,7 +50,6 @@
             padding: 5px 10px; border-radius: 8px; margin-bottom: 5px; font-size: 11px; color: #999;
         }
 
-        /* --- PREVIEW BALASAN (Agar Tidak Menutupi Input) --- */
         #reply-preview {
             display: none; background: #111; padding: 10px 20px;
             border-top: 1px solid var(--gold); border-left: 5px solid var(--gold);
@@ -52,7 +60,6 @@
         .text-content { font-size: 14px; color: #eee; word-wrap: break-word; }
         .timestamp { font-size: 8px; color: #555; display: block; margin-top: 4px; text-align: right; }
 
-        /* --- INPUT AREA FIX (Selalu di Bawah) --- */
         .input-area { 
             padding: 10px 15px; background: #0a0a0a; border-top: 1px solid #222; 
             display: flex; gap: 10px; align-items: center; flex-shrink: 0;
@@ -73,8 +80,19 @@
 </head>
 <body>
 
+    <audio id="bgMusic" loop>
+        <source src="kisah klasik.mp3" type="audio/mpeg">
+    </audio>
+
     <header>
         <a href="main.html" style="position: absolute; left: 15px; color: var(--gold); text-decoration: none; font-size: 12px;">← BACK</a>
+        
+        <div class="audio-nav" id="musicToggle">
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+        </div>
+
         <span style="color: var(--gold); font-weight: bold; font-size: 14px;">COMRIGHT 379 CHAT</span>
     </header>
 
@@ -96,7 +114,56 @@
     </div>
 
     <script>
-        // FIREBASE SETUP
+        // --- LOGIKA MUSIK & VISUALIZER (PENYAMBUNG ALUNAN) ---
+        const music = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicToggle');
+        const bars = document.querySelectorAll('.bar');
+
+        function updateVisualizer(playing) {
+            bars.forEach(bar => {
+                if (playing) bar.classList.add('animate');
+                else bar.classList.remove('animate');
+            });
+        }
+
+        window.addEventListener('load', () => {
+            const savedTime = localStorage.getItem('musicTime');
+            const isPlaying = localStorage.getItem('musicPlaying');
+
+            if (savedTime) music.currentTime = parseFloat(savedTime);
+            if (isPlaying === 'true') {
+                music.play().then(() => {
+                    updateVisualizer(true);
+                }).catch(() => {
+                    document.addEventListener('click', () => {
+                        if(localStorage.getItem('musicPlaying') === 'true' && music.paused) {
+                            music.play();
+                            updateVisualizer(true);
+                        }
+                    }, { once: true });
+                });
+            }
+        });
+
+        setInterval(() => {
+            if (!music.paused) {
+                localStorage.setItem('musicTime', music.currentTime);
+            }
+        }, 500);
+
+        musicBtn.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                updateVisualizer(true);
+                localStorage.setItem('musicPlaying', 'true');
+            } else {
+                music.pause();
+                updateVisualizer(false);
+                localStorage.setItem('musicPlaying', 'false');
+            }
+        });
+
+        // --- FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyALj_Gcwf_jwow1MPVZ0_xpTvvyB_bwEXo",
             authDomain: "comright379.firebaseapp.com",
@@ -141,7 +208,6 @@
             });
         }
 
-        // LOGIKA SWIPE HP
         let touchStartX = 0;
         let activeReplyCandidate = null;
         function handleTouchStart(e, name, text) { touchStartX = e.touches[0].clientX; activeReplyCandidate = { name, text }; }
@@ -150,7 +216,6 @@
             if (touchEndX - touchStartX > 60 && activeReplyCandidate) { setReply(activeReplyCandidate.name, activeReplyCandidate.text); }
         }
 
-        // FUNGSI BALAS
         function setReply(name, text) {
             replyData = { name, text };
             document.getElementById('reply-preview').style.display = 'flex';
@@ -164,7 +229,6 @@
             document.getElementById('reply-preview').style.display = 'none';
         }
 
-        // KIRIM PESAN
         function sendMessage() {
             const input = document.getElementById('message-input');
             const msg = input.value.trim();
@@ -181,9 +245,7 @@
             }
         }
 
-        // KEYBOARD & ENTER FIX
         const inputField = document.getElementById('message-input');
-        
         inputField.addEventListener('keydown', (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -191,7 +253,6 @@
             }
         });
 
-        // Agar saat ngetik di HP, chat otomatis scroll ke bawah
         inputField.addEventListener('focus', () => {
             setTimeout(() => {
                 document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
