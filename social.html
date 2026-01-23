@@ -60,13 +60,12 @@
             justify-content: center; gap: 20px; transform: skewY(-1deg);
         }
         
-        /* OPTIMASI ANIMASI SMOOTH */
         .row-container { 
             display: flex; 
             gap: 20px; 
             width: max-content; 
             animation: glide linear infinite; 
-            will-change: transform; /* Memberitahu browser untuk siap animasi */
+            will-change: transform;
         }
         .r1 { animation-duration: 50s; }
         .r2 { animation-duration: 40s; animation-direction: reverse; }
@@ -133,6 +132,36 @@
             background: rgba(0,0,0,0.8); border: 1px solid var(--gold-primary);
             padding: 10px 25px; border-radius: 50px; text-align: center;
         }
+
+        /* REVISI ANIMASI LOADING LANDAK (FULL SCREEN STARTUP) */
+        #loading-hedgehog {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505;
+            z-index: 5000; display: flex; /* Default tampil */
+            flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+        #loading-hedgehog.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .hedgehog-animation {
+            font-size: 60px;
+            animation: wiggle 0.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px var(--gold-primary));
+        }
+        .loading-text {
+            margin-top: 20px;
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            letter-spacing: 2px;
+            font-size: 14px;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(-8deg); }
+            75% { transform: translateY(-15px) rotate(8deg); }
+        }
     </style>
 </head>
 <body>
@@ -165,6 +194,11 @@
         <div class="row-container r3" id="row3"></div>
     </div>
 
+    <div id="loading-hedgehog">
+        <div class="hedgehog-animation">🦔</div>
+        <div class="loading-text">Menunggu onic Pulang </div>
+    </div>
+
     <div id="modal-overlay" onclick="closeModal()">
         <div class="modal-card" onclick="event.stopPropagation()">
             <div id="view-mode">
@@ -173,7 +207,7 @@
                 </div>
                 <h3 id="m-name">User Name</h3>
                 <p id="m-handle" style="margin-bottom: 20px; font-size: 12px; color: #aaa;">@username</p>
-                <a href="#" id="m-link" class="btn-visit" target="_blank">Buka Instagram</a>
+                <a href="#" id="m-link" class="btn-visit">Buka Instagram</a>
             </div>
 
             <div id="form-mode" style="display: none;">
@@ -201,34 +235,39 @@
         let isAdmin = false;
 
         async function fetchMembers() {
+            const loader = document.getElementById('loading-hedgehog');
             try {
                 const response = await fetch(`${SHEET_CSV}&t=${new Date().getTime()}`);
                 const dataText = await response.text();
-                
                 const rows = dataText.split(/\r?\n/).slice(1);
                 let allMembers = [];
-
                 rows.forEach(row => {
                     const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
                     if (cols && cols.length >= 3) {
                         const n = cols[0].replace(/"/g, "").trim();
                         const u = cols[1].replace(/"/g, "").trim();
                         const l = cols[2].replace(/"/g, "").trim();
-                        
                         const isEmpty = !n || n.toLowerCase().includes("slot tersedia") || l === "#";
                         if (!isEmpty) allMembers.push({ n, u, l, empty: false });
                     }
                 });
-
                 while(allMembers.length < 24) {
                     allMembers.push({ n: "Slot Tersedia", u: "@klik_untuk_isi", l: "#", empty: true });
                 }
-
                 const perRow = Math.ceil(allMembers.length / 3);
                 renderRow('row1', allMembers.slice(0, perRow));
                 renderRow('row2', allMembers.slice(perRow, perRow * 2));
                 renderRow('row3', allMembers.slice(perRow * 2));
-            } catch (e) { console.error("Fetch Error:", e); }
+
+                // Hilangkan loading setelah data siap
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                }, 1500);
+
+            } catch (e) { 
+                console.error("Fetch Error:", e);
+                loader.classList.add('fade-out'); // Tetap hilangkan jika error
+            }
         }
 
         function renderRow(id, data) {
@@ -264,7 +303,17 @@
                 form.style.display = 'none';
                 document.getElementById('m-name').innerText = name;
                 document.getElementById('m-handle').innerText = handle;
-                document.getElementById('m-link').href = link;
+                
+                const linkBtn = document.getElementById('m-link');
+                linkBtn.onclick = function(e) {
+                    e.preventDefault();
+                    const loader = document.getElementById('loading-hedgehog');
+                    loader.classList.remove('fade-out'); // Munculkan lagi
+                    setTimeout(() => {
+                        window.open(link, '_blank');
+                        loader.classList.add('fade-out');
+                    }, 1800);
+                };
 
                 if (isAdmin) {
                     const delBtn = document.createElement('button');
@@ -288,7 +337,7 @@
                     method: 'POST', mode: 'no-cors',
                     body: JSON.stringify({ action: 'delete', username: username })
                 });
-                alert("Berhasil! Halaman akan refresh.");
+                alert("Berhasil!");
                 location.reload();
             } catch (e) { alert("Gagal!"); btn.disabled = false; }
         }
@@ -299,14 +348,13 @@
             const link = document.getElementById('in-link').value;
             const btn = document.getElementById('btn-send');
             if(!nama || !user || !link) return alert("Lengkapi data!");
-            
             btn.innerText = "Memproses..."; btn.disabled = true;
             try {
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     body: JSON.stringify({ action: 'insert', nama, username: user, link })
                 });
-                alert("Berhasil! Data terkirim. Mohon tunggu beberapa saat untuk sinkronisasi.");
+                alert("Berhasil!");
                 closeModal();
                 setTimeout(() => location.reload(), 2000);
             } catch (e) { alert("Error!"); btn.disabled = false; }
