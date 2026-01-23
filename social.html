@@ -59,16 +59,30 @@
             height: 100vh; display: flex; flex-direction: column; 
             justify-content: center; gap: 20px; transform: skewY(-1deg);
         }
-        .row-container { display: flex; gap: 20px; width: max-content; animation: glide linear infinite; }
+        
+        /* OPTIMASI ANIMASI SMOOTH */
+        .row-container { 
+            display: flex; 
+            gap: 20px; 
+            width: max-content; 
+            animation: glide linear infinite; 
+            will-change: transform; /* Memberitahu browser untuk siap animasi */
+        }
         .r1 { animation-duration: 50s; }
         .r2 { animation-duration: 40s; animation-direction: reverse; }
         .r3 { animation-duration: 55s; }
-        @keyframes glide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        @keyframes glide { 
+            from { transform: translate3d(0, 0, 0); } 
+            to { transform: translate3d(-50%, 0, 0); } 
+        }
 
         .card-elite {
             background: var(--glass); border: 1px solid rgba(212,175,55,0.15);
             padding: 10px 22px; border-radius: 50px; display: flex; align-items: center; gap: 12px;
-            cursor: pointer; min-width: 250px; transition: 0.4s; backdrop-filter: blur(5px);
+            cursor: pointer; min-width: 250px; transition: 0.4s; 
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         .card-elite:hover { border-color: var(--gold-primary); background: rgba(212,175,55,0.05); }
 
@@ -188,11 +202,9 @@
 
         async function fetchMembers() {
             try {
-                // Anti-cache: Menambahkan t=timestamp agar browser tidak mengambil data lama
                 const response = await fetch(`${SHEET_CSV}&t=${new Date().getTime()}`);
                 const dataText = await response.text();
                 
-                // Regex untuk memisahkan CSV dengan aman (menangani tanda koma dalam kutipan)
                 const rows = dataText.split(/\r?\n/).slice(1);
                 let allMembers = [];
 
@@ -208,7 +220,7 @@
                     }
                 });
 
-                while(allMembers.length < 25) {
+                while(allMembers.length < 24) {
                     allMembers.push({ n: "Slot Tersedia", u: "@klik_untuk_isi", l: "#", empty: true });
                 }
 
@@ -221,6 +233,7 @@
 
         function renderRow(id, data) {
             const container = document.getElementById(id);
+            if(!container) return;
             let html = '';
             data.forEach(item => {
                 const cardClass = item.empty ? 'card-elite card-empty' : 'card-elite';
@@ -293,7 +306,7 @@
                     method: 'POST', mode: 'no-cors',
                     body: JSON.stringify({ action: 'insert', nama, username: user, link })
                 });
-                alert("Berhasil! Data akan muncul dalam beberapa saat.");
+                alert("Berhasil! Data terkirim. Mohon tunggu beberapa saat untuk sinkronisasi.");
                 closeModal();
                 setTimeout(() => location.reload(), 2000);
             } catch (e) { alert("Error!"); btn.disabled = false; }
@@ -301,7 +314,6 @@
 
         function checkAdmin() {
             const pass = prompt("Password Admin:");
-            // Password: bonge123 (Disamarkan sedikit agar tidak gampang di-ctrl+f)
             if (btoa(pass) === "Ym9uZ2UxMjM=") {
                 isAdmin = true;
                 alert("Akses Admin Aktif!");
