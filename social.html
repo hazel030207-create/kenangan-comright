@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COMRIGHT 379 - Social Circle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold-primary: #d4af37;
+            --deep-dark: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
+            --ig-gradient: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            --vip-gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--deep-dark); 
+            color: white; 
+            overflow: hidden;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
+        }
+
+        header {
+            position: fixed; top: 0; width: 100%; height: 80px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; z-index: 2000; border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+
+        .menu-btn { cursor: pointer; display: flex; flex-direction: column; gap: 6px; padding: 10px; z-index: 3001; }
+        .bar { width: 28px; height: 2px; background: var(--gold-primary); transition: 0.4s; box-shadow: 0 0 8px var(--gold-primary); }
+        
+        .logo-center h1 { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold-primary); letter-spacing: 4px; }
+        .logo-center p { font-size: 7px; letter-spacing: 3px; color: #888; text-transform: uppercase; text-align: center; }
+
+        .admin-btn { cursor: pointer; padding: 10px; transition: 0.3s; z-index: 3001; }
+        .admin-btn:active { transform: scale(0.9); opacity: 0.7; }
+
+        .sidebar {
+            position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
+            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(20px);
+            z-index: 3000; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            padding: 100px 30px; border-right: 1px solid var(--gold-primary);
+        }
+        .sidebar.active { left: 0; }
+        .nav-links a {
+            color: #fff; text-decoration: none; font-size: 14px; display: block;
+            padding: 18px 0; border-bottom: 1px solid rgba(212,175,55,0.15);
+            text-transform: uppercase;
+        }
+
+        .viewport-3d {
+            height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; gap: 20px; transform: skewY(-1deg);
+        }
+        .row-container { display: flex; gap: 20px; width: max-content; animation: glide linear infinite; }
+        .r1 { animation-duration: 50s; }
+        .r2 { animation-duration: 40s; animation-direction: reverse; }
+        .r3 { animation-duration: 55s; }
+        @keyframes glide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        .card-elite {
+            background: var(--glass); border: 1px solid rgba(212,175,55,0.15);
+            padding: 10px 22px; border-radius: 50px; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; min-width: 250px; transition: 0.4s; backdrop-filter: blur(5px);
+        }
+        .card-elite:hover { border-color: var(--gold-primary); background: rgba(212,175,55,0.05); }
+
+        .ig-circle { 
+            width: 36px; height: 36px; border-radius: 50%; 
+            background: var(--ig-gradient); 
+            display: flex; align-items: center; justify-content: center; 
+        }
+
+        .card-empty .ig-circle { background: #333 !important; filter: grayscale(1); opacity: 0.4; }
+        .card-empty .user-n { color: #666; }
+
+        .ig-circle svg { width: 18px; height: 18px; fill: white; }
+        .info .user-n { display: block; font-size: 13px; font-weight: 600; color: #fff; }
+        .info .user-h { display: block; font-size: 8px; color: var(--gold-primary); font-weight: bold; }
+
+        #modal-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            z-index: 4000; display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.3s;
+        }
+        .modal-card {
+            background: #111; border: 1px solid var(--gold-primary);
+            padding: 30px; border-radius: 25px; text-align: center;
+            width: 85%; max-width: 350px; transform: scale(0.8); transition: 0.4s;
+        }
+        #modal-overlay.active { display: flex; opacity: 1; }
+        #modal-overlay.active .modal-card { transform: scale(1); }
+        
+        .vip-input {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            border-radius: 12px; color: white; outline: none; font-family: 'Poppins';
+        }
+        .vip-input:focus { border-color: var(--gold-primary); }
+        
+        .btn-visit { background: var(--ig-gradient); }
+        .btn-submit { background: var(--vip-gold); color: #000; margin-top: 10px; }
+        .btn-visit, .btn-submit {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            color: white; text-decoration: none; width: 100%;
+            padding: 12px 25px; border-radius: 50px; font-weight: 600; border: none; cursor: pointer;
+        }
+
+        .footer-vip { position: fixed; bottom: 30px; width: 100%; display: flex; justify-content: center; z-index: 1000; }
+        .comright-one-btn {
+            background: rgba(0,0,0,0.8); border: 1px solid var(--gold-primary);
+            padding: 10px 25px; border-radius: 50px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="menu-btn" onclick="toggleMenu(event)">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="logo-center">
+            <h1>COMRIGHT</h1>
+            <p>Legacy Collection 379</p>
+        </div>
+        <div class="admin-btn" onclick="checkAdmin()">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--gold-primary)">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10z"></path>
+            </svg>
+        </div>
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-links">
+            <li><a href="main.html">🏠 Home Main</a></li>
+            <li><a href="galeri.html">📸 Memory Gallery</a></li>
+        </ul>
+    </nav>
+
+    <div class="viewport-3d">
+        <div class="row-container r1" id="row1"></div>
+        <div class="row-container r2" id="row2"></div>
+        <div class="row-container r3" id="row3"></div>
+    </div>
+
+    <div id="modal-overlay" onclick="closeModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div id="view-mode">
+                <div class="ig-circle" style="margin: 0 auto 15px; width: 60px; height: 60px;">
+                    <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.607-1.308 1.266-.058-1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.337-2.618-6.78-6.98-6.98-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+                </div>
+                <h3 id="m-name">User Name</h3>
+                <p id="m-handle" style="margin-bottom: 20px; font-size: 12px; color: #aaa;">@username</p>
+                <a href="#" id="m-link" class="btn-visit" target="_blank">Buka Instagram</a>
+            </div>
+
+            <div id="form-mode" style="display: none;">
+                <h3 style="font-family:'Cinzel'; color:var(--gold-primary); margin-bottom:15px;">Daftar Anggota</h3>
+                <input type="text" id="in-nama" class="vip-input" placeholder="Nama Lengkap">
+                <input type="text" id="in-user" class="vip-input" placeholder="@username_ig">
+                <input type="text" id="in-link" class="vip-input" placeholder="https://instagram.com/user">
+                <button onclick="kirimData()" id="btn-send" class="btn-submit">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-vip">
+        <div class="comright-one-btn">
+            <h3 style="font-family:'Cinzel'; color:var(--gold-primary); font-size: 12px;">COMRIGHT LEGACY 379</h3>
+        </div>
+    </div>
+
+    <script>
+        const igSVG = `<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.607-1.308 1.266-.058-1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.337-2.618-6.78-6.98-6.98-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+
+        const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRtvAF7SXJgFpUDPaDJp6fCXf67f7PqzS1r0EhBKJnn3_Yesea4qbV9KYlC6Q18zIKvCIQqaK-CH2qN/pub?output=csv';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLopHCiEuMD9D4gj1cfrqFD2KuBnOw3hs7MM6kmwQAPIkDjVTOH5P8jgR-WCTr5b6Q/exec'; 
+
+        let isAdmin = false;
+
+        async function fetchMembers() {
+            try {
+                // Anti-cache: Menambahkan t=timestamp agar browser tidak mengambil data lama
+                const response = await fetch(`${SHEET_CSV}&t=${new Date().getTime()}`);
+                const dataText = await response.text();
+                
+                // Regex untuk memisahkan CSV dengan aman (menangani tanda koma dalam kutipan)
+                const rows = dataText.split(/\r?\n/).slice(1);
+                let allMembers = [];
+
+                rows.forEach(row => {
+                    const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if (cols && cols.length >= 3) {
+                        const n = cols[0].replace(/"/g, "").trim();
+                        const u = cols[1].replace(/"/g, "").trim();
+                        const l = cols[2].replace(/"/g, "").trim();
+                        
+                        const isEmpty = !n || n.toLowerCase().includes("slot tersedia") || l === "#";
+                        if (!isEmpty) allMembers.push({ n, u, l, empty: false });
+                    }
+                });
+
+                while(allMembers.length < 25) {
+                    allMembers.push({ n: "Slot Tersedia", u: "@klik_untuk_isi", l: "#", empty: true });
+                }
+
+                const perRow = Math.ceil(allMembers.length / 3);
+                renderRow('row1', allMembers.slice(0, perRow));
+                renderRow('row2', allMembers.slice(perRow, perRow * 2));
+                renderRow('row3', allMembers.slice(perRow * 2));
+            } catch (e) { console.error("Fetch Error:", e); }
+        }
+
+        function renderRow(id, data) {
+            const container = document.getElementById(id);
+            let html = '';
+            data.forEach(item => {
+                const cardClass = item.empty ? 'card-elite card-empty' : 'card-elite';
+                html += `
+                <div class="${cardClass}" onclick="openModal('${item.n}', '${item.u}', '${item.l}', ${item.empty})">
+                    <div class="ig-circle">${igSVG}</div>
+                    <div class="info">
+                        <span class="user-n">${item.n}</span>
+                        <span class="user-h">${item.u}</span>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html + html; 
+        }
+
+        function openModal(name, handle, link, isEmpty) {
+            const view = document.getElementById('view-mode');
+            const form = document.getElementById('form-mode');
+            const overlay = document.getElementById('modal-overlay');
+            const oldDelBtn = document.getElementById('admin-del-btn');
+            if (oldDelBtn) oldDelBtn.remove();
+
+            if (isEmpty) {
+                view.style.display = 'none';
+                form.style.display = 'block';
+            } else {
+                view.style.display = 'block';
+                form.style.display = 'none';
+                document.getElementById('m-name').innerText = name;
+                document.getElementById('m-handle').innerText = handle;
+                document.getElementById('m-link').href = link;
+
+                if (isAdmin) {
+                    const delBtn = document.createElement('button');
+                    delBtn.id = 'admin-del-btn';
+                    delBtn.innerText = "Hapus Anggota Ini";
+                    delBtn.style = "background: #ff4d4d; color: white; border: none; padding: 12px; width: 100%; border-radius: 50px; margin-top: 15px; cursor: pointer; font-weight: bold; font-family: 'Poppins';";
+                    delBtn.onclick = () => hapusData(handle);
+                    view.appendChild(delBtn);
+                }
+            }
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 10);
+        }
+
+        async function hapusData(username) {
+            if (!confirm(`Hapus ${username}?`)) return;
+            const btn = document.getElementById('admin-del-btn');
+            btn.innerText = "Menghapus..."; btn.disabled = true;
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ action: 'delete', username: username })
+                });
+                alert("Berhasil! Halaman akan refresh.");
+                location.reload();
+            } catch (e) { alert("Gagal!"); btn.disabled = false; }
+        }
+
+        async function kirimData() {
+            const nama = document.getElementById('in-nama').value;
+            const user = document.getElementById('in-user').value;
+            const link = document.getElementById('in-link').value;
+            const btn = document.getElementById('btn-send');
+            if(!nama || !user || !link) return alert("Lengkapi data!");
+            
+            btn.innerText = "Memproses..."; btn.disabled = true;
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ action: 'insert', nama, username: user, link })
+                });
+                alert("Berhasil! Data akan muncul dalam beberapa saat.");
+                closeModal();
+                setTimeout(() => location.reload(), 2000);
+            } catch (e) { alert("Error!"); btn.disabled = false; }
+        }
+
+        function checkAdmin() {
+            const pass = prompt("Password Admin:");
+            // Password: bonge123 (Disamarkan sedikit agar tidak gampang di-ctrl+f)
+            if (btoa(pass) === "Ym9uZ2UxMjM=") {
+                isAdmin = true;
+                alert("Akses Admin Aktif!");
+            } else if (pass) { alert("Salah!"); }
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.style.display = 'none', 300);
+        }
+
+        function toggleMenu(e) { if(e) e.stopPropagation(); document.getElementById('sidebar').classList.toggle('active'); }
+
+        document.addEventListener('click', (e) => {
+            const s = document.getElementById('sidebar');
+            if (s.classList.contains('active') && !s.contains(e.target) && !e.target.closest('.menu-btn')) {
+                s.classList.remove('active');
+            }
+        });
+
+        window.onload = fetchMembers;
+    </script>
+</body>
+</html>
