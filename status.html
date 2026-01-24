@@ -50,7 +50,7 @@
         }
         .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
 
-        /* --- SIDEBAR NAVIGATION --- */
+        /* --- SIDEBAR --- */
         nav { 
             width: 80px; background: var(--sidebar); border-right: 1px solid rgba(212, 175, 55, 0.2);
             height: 100vh; position: fixed; left: 0; top: 0; display: none;
@@ -69,6 +69,18 @@
         @media (min-width: 768px) { .nav-text { display: block; } }
         .nav-item:hover { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
+        /* --- ADMIN PANEL STYLE --- */
+        #admin-panel {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid var(--gold);
+            padding: 20px; border-radius: 20px; margin-bottom: 30px;
+            display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .member-row {
+            display: flex; justify-content: space-between; padding: 10px;
+            border-bottom: 1px solid #222; font-size: 12px;
+        }
+
         /* --- MAIN CONTENT --- */
         main { flex: 1; margin-left: 0; padding: 20px; display: none; transition: 0.3s; }
         @media (min-width: 80px) { main { margin-left: 80px; } }
@@ -81,34 +93,22 @@
         }
 
         .feed { max-width: 700px; margin: 0 auto; }
-        .post-input-box { 
-            background: var(--card); padding: 25px; border-radius: 24px; 
-            margin-bottom: 30px; border: 1px solid #222;
-        }
-        .inp-text { 
-            width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; 
-            border-radius: 12px; color: white; resize: none; outline: none; margin-bottom: 12px; 
-        }
+        .post-input-box { background: var(--card); padding: 25px; border-radius: 24px; margin-bottom: 30px; border: 1px solid #222; }
+        .inp-text { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; color: white; resize: none; outline: none; margin-bottom: 12px; }
 
         .upload-area { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
         #preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; display: none; border: 1px solid var(--gold); }
         .btn-upload { background: #222; color: var(--gold); padding: 10px 15px; border-radius: 10px; border: 1px solid #444; cursor: pointer; font-size: 13px; }
 
-        .post-card { 
-            background: var(--card); padding: 20px; border-radius: 24px; 
-            margin-bottom: 25px; border: 1px solid #222; position: relative;
-            animation: fadeIn 0.5s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .badge-admin { background: var(--gold); color: black; font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 800; margin-left: 5px; }
+        .post-card { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 25px; border: 1px solid #222; position: relative; animation: fadeIn 0.5s ease; }
         .post-img-display { width: 100%; border-radius: 15px; margin: 15px 0; border: 1px solid #333; object-fit: cover; max-height: 500px; }
         .post-actions { display: flex; gap: 25px; margin: 15px 0; border-top: 1px solid #222; padding-top: 15px; font-size: 14px; }
         .action-item { cursor: pointer; color: #888; display: flex; align-items: center; gap: 6px; }
         .action-item:hover { color: var(--gold); }
-        .admin-del { color: #ff4444; font-size: 13px; cursor: pointer; float: right; transition: 0.2s; }
+        .admin-del { color: #ff4444; font-size: 13px; cursor: pointer; float: right; }
+        .badge-admin { background: var(--gold); color: black; font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 800; margin-left: 5px; }
 
-        .comment-item { background: var(--glass); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 12.5px; border-left: 2px solid var(--gold); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -138,42 +138,24 @@
             <span class="nav-text" style="font-family: 'Cinzel'; color: var(--gold); font-size: 20px;">379 ELITE</span>
         </div>
         
-        <a href="main.html" class="nav-item" onclick="location.reload()">
-            <i class="fa-solid fa-house"></i>
-            <span class="nav-text">Beranda</span>
-        </a>
-
-        <a href="https://www.tiktok.com/" target="_blank" class="nav-item">
-            <i class="fa-brands fa-tiktok"></i>
-            <span class="nav-text">TikTok</span>
-        </a>
-
-        <a href="https://www.youtube.com/" target="_blank" class="nav-item">
-            <i class="fa-brands fa-youtube"></i>
-            <span class="nav-text">YouTube</span>
-        </a>
-
-        <a href="https://www.instagram.com/" target="_blank" class="nav-item">
-            <i class="fa-brands fa-instagram"></i>
-            <span class="nav-text">Instagram</span>
-        </a>
-
+        <a href="#" class="nav-item" onclick="location.reload()"><i class="fa-solid fa-house"></i><span class="nav-text">Beranda</span></a>
+        <a href="https://www.tiktok.com/" target="_blank" class="nav-item"><i class="fa-brands fa-tiktok"></i><span class="nav-text">TikTok</span></a>
+        <a href="https://www.youtube.com/" target="_blank" class="nav-item"><i class="fa-brands fa-youtube"></i><span class="nav-text">YouTube</span></a>
+        <a href="https://www.instagram.com/" target="_blank" class="nav-item"><i class="fa-brands fa-instagram"></i><span class="nav-text">Instagram</span></a>
+        
         <a href="intent://#Intent;package=com.mobile.legends;scheme=mobilelegends;end" class="nav-item">
-            <i class="fa-solid fa-gamepad"></i>
-            <span class="nav-text">Mobile Legends</span>
+            <i class="fa-solid fa-gamepad"></i><span class="nav-text">Mobile Legends</span>
         </a>
-
         <a href="intent://#Intent;package=com.roblox.client;scheme=roblox;end" class="nav-item">
-            <i class="fa-solid fa-cube"></i>
-            <span class="nav-text">Roblox</span>
+            <i class="fa-solid fa-cube"></i><span class="nav-text">Roblox</span>
         </a>
     </nav>
 
     <main id="main-app">
         <header>
             <div>
-                <h2 style="font-family: 'Cinzel'; color: var(--gold); letter-spacing: 1px;">Elite Feed</h2>
-                <p id="greet-text" style="font-size: 11px; color: #777; font-weight: 300;"></p>
+                <h2 style="font-family: 'Cinzel'; color: var(--gold);">Elite Feed</h2>
+                <p id="greet-text" style="font-size: 11px; color: #777;"></p>
             </div>
             <div style="text-align: right;">
                 <span id="user-display" style="font-size: 13px; font-weight: 600; color: var(--gold);"></span>
@@ -182,6 +164,13 @@
         </header>
 
         <div class="feed">
+            <div id="admin-panel">
+                <h3 style="font-family: 'Cinzel'; color: var(--gold); font-size: 14px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-user-shield"></i> Member Database (Admin Only)
+                </h3>
+                <div id="member-list-content" style="max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 10px;"></div>
+            </div>
+
             <div class="post-input-box">
                 <textarea id="post-text" class="inp-text" placeholder="Bagikan momen elitmu..." rows="3"></textarea>
                 <div class="upload-area">
@@ -198,10 +187,24 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyALj_Gcwf_jwow1MPVZ0_xpTvvyB_bwEXo",
+            authDomain: "comright379.firebaseapp.com",
+            databaseURL: "https://comright379-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "comright379",
+            storageBucket: "comright379.firebasestorage.app",
+            messagingSenderId: "602850111912",
+            appId: "1:602850111912:web:1372097fa168af0668ad9d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let currentUser = "";
         let isAdmin = false;
-        let posts = [];
         let base64Image = ""; 
         const ADMIN_ID = "haeri030207", ADMIN_PW = "haeri030207";
 
@@ -214,35 +217,47 @@
                 preview.style.display = 'block';
                 base64Image = reader.result;
             }
-            if (file) {
-                reader.readAsDataURL(file);
-                document.getElementById('file-name').innerText = file.name;
-            }
+            if (file) { reader.readAsDataURL(file); document.getElementById('file-name').innerText = file.name; }
         }
 
         function toggleRegister() {
-            const loginC = document.getElementById('login-container');
-            const regC = document.getElementById('reg-container');
-            loginC.style.display = loginC.style.display === 'none' ? 'block' : 'none';
-            regC.style.display = regC.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('login-container').style.display = document.getElementById('login-container').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('reg-container').style.display = document.getElementById('reg-container').style.display === 'none' ? 'block' : 'none';
         }
 
         function handleRegister() {
             const name = document.getElementById('reg-name').value;
-            if(!name) return alert("Isi data!");
-            alert("Member " + name + " berhasil terdaftar!");
-            toggleRegister();
+            const id = document.getElementById('reg-id').value.trim();
+            const pw = document.getElementById('reg-pw').value.trim();
+            if(!name || !id || !pw) return alert("Lengkapi data!");
+
+            db.ref('users/' + id).set({
+                nama: name,
+                password: pw,
+                joinedAt: Date.now()
+            }).then(() => {
+                alert("Registrasi Berhasil!");
+                toggleRegister();
+            });
         }
 
         function handleLogin() {
             const user = document.getElementById('log-user').value.trim();
             const pass = document.getElementById('log-pass').value.trim();
-            if (user === ADMIN_ID && pass === ADMIN_PW) {
-                isAdmin = true; currentUser = "Haeri (ADMIN)";
-            } else if(user && pass) {
-                isAdmin = false; currentUser = user;
-            } else return alert("Gagal masuk!");
 
+            if (user === ADMIN_ID && pass === ADMIN_PW) {
+                isAdmin = true; currentUser = "Haeri (ADMIN)"; launchApp();
+            } else if(user && pass) {
+                db.ref('users/' + user).once('value', (snapshot) => {
+                    const userData = snapshot.val();
+                    if(userData && userData.password === pass) {
+                        isAdmin = false; currentUser = user; launchApp();
+                    } else { alert("ID atau Password salah!"); }
+                });
+            } else alert("Isi ID dan Password!");
+        }
+
+        function launchApp() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('sidebar-nav').style.display = 'flex';
             document.getElementById('main-app').style.display = 'block';
@@ -250,69 +265,84 @@
             
             const hour = new Date().getHours();
             let greet = hour < 12 ? "Selamat Pagi" : (hour < 18 ? "Selamat Sore" : "Selamat Malam");
-            document.getElementById('greet-text').innerText = greet + ", selamat datang di lingkaran elit.";
-            renderPosts();
+            document.getElementById('greet-text').innerText = greet + ", selamat datang.";
+
+            if(isAdmin) {
+                document.getElementById('admin-panel').style.display = 'block';
+                loadMemberList();
+            }
+            listenToPosts();
+        }
+
+        function loadMemberList() {
+            db.ref('users').on('value', (snapshot) => {
+                const listContainer = document.getElementById('member-list-content');
+                listContainer.innerHTML = "";
+                snapshot.forEach((child) => {
+                    const user = child.val();
+                    listContainer.innerHTML += `
+                        <div class="member-row">
+                            <span><b>${user.nama}</b> (@${child.key})</span>
+                            <span style="color:var(--gold)">PW: ${user.password}</span>
+                        </div>`;
+                });
+            });
         }
 
         function submitPost() {
             const text = document.getElementById('post-text').value;
             if (!text.trim() && !base64Image) return alert("Isi konten!");
-            const newPost = {
-                id: Date.now(),
+            
+            const postData = {
                 user: currentUser,
                 isAdmin: isAdmin,
                 content: text,
                 image: base64Image,
                 likes: 0,
-                comments: []
+                timestamp: Date.now()
             };
-            posts.unshift(newPost);
-            document.getElementById('post-text').value = "";
-            document.getElementById('preview-img').style.display = 'none';
-            base64Image = ""; 
-            renderPosts();
-        }
 
-        function toggleLike(postId) {
-            const post = posts.find(p => p.id === postId);
-            post.likes++;
-            renderPosts();
-        }
-
-        function addComment(postId) {
-            const input = document.getElementById(`in-com-${postId}`);
-            if (!input.value.trim()) return;
-            const post = posts.find(p => p.id === postId);
-            post.comments.push({ user: currentUser, text: input.value });
-            input.value = "";
-            renderPosts();
-        }
-
-        function renderPosts() {
-            const list = document.getElementById('post-list');
-            list.innerHTML = posts.length === 0 ? `<p style="text-align:center; color:#444; margin-top:50px;">Belum ada postingan.</p>` : "";
-            
-            posts.forEach(p => {
-                let commentsHtml = p.comments.map(c => `<div class="comment-item"><b>@${c.user}</b>: ${c.text}</div>`).join("");
-                let badge = p.isAdmin ? `<span class="badge-admin">VIP ADMIN</span>` : `<span style="font-size:9px; color:#555; margin-left:5px;">[MEMBER]</span>`;
-                let postImg = p.image ? `<img src="${p.image}" class="post-img-display">` : "";
-                
-                list.innerHTML += `
-                    <div class="post-card">
-                        <div><span style="font-weight:600; color:var(--gold);">@${p.user} ${badge}</span></div>
-                        <div style="font-size:15px; margin-top:12px; color:#eee;">${p.content}</div>
-                        ${postImg}
-                        <div class="post-actions">
-                            <span class="action-item" onclick="toggleLike(${p.id})"><i class="fa-solid fa-heart"></i> ${p.likes}</span>
-                            <span class="action-item"><i class="fa-solid fa-comment"></i> ${p.comments.length}</span>
-                        </div>
-                        <div class="comment-list">${commentsHtml}</div>
-                        <div style="display:flex; gap:10px; margin-top:15px;">
-                            <input type="text" id="in-com-${p.id}" class="inp-auth" placeholder="Balas..." style="margin:0; font-size:12px; padding:10px; flex:1;">
-                            <button onclick="addComment(${p.id})" style="background:var(--gold); border:none; padding:0 15px; border-radius:10px; cursor:pointer;">➤</button>
-                        </div>
-                    </div>`;
+            db.ref('posts').push(postData).then(() => {
+                document.getElementById('post-text').value = "";
+                document.getElementById('preview-img').style.display = 'none';
+                base64Image = "";
             });
+        }
+
+        function listenToPosts() {
+            db.ref('posts').on('value', (snapshot) => {
+                const list = document.getElementById('post-list');
+                list.innerHTML = "";
+                let postsArray = [];
+                snapshot.forEach((child) => {
+                    postsArray.unshift({ id: child.key, ...child.val() });
+                });
+
+                postsArray.forEach(p => {
+                    let badge = p.isAdmin ? `<span class="badge-admin">VIP ADMIN</span>` : `<span style="font-size:9px; color:#555; margin-left:5px;">[MEMBER]</span>`;
+                    let postImg = p.image ? `<img src="${p.image}" class="post-img-display">` : "";
+                    let delBtn = isAdmin ? `<span class="admin-del" onclick="deletePost('${p.id}')"><i class="fa-solid fa-trash"></i></span>` : "";
+
+                    list.innerHTML += `
+                        <div class="post-card">
+                            ${delBtn}
+                            <div><span style="font-weight:600; color:var(--gold);">@${p.user} ${badge}</span></div>
+                            <div style="font-size:15px; margin-top:12px; color:#eee;">${p.content}</div>
+                            ${postImg}
+                            <div class="post-actions">
+                                <span class="action-item" onclick="toggleLike('${p.id}', ${p.likes})"><i class="fa-solid fa-heart"></i> ${p.likes}</span>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function toggleLike(postId, currentLikes) {
+            db.ref('posts/' + postId).update({ likes: currentLikes + 1 });
+        }
+
+        function deletePost(postId) {
+            if(confirm("Hapus postingan ini?")) db.ref('posts/' + postId).remove();
         }
     </script>
 </body>
