@@ -3,379 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Alumni - COMRIGHT 379 Legacy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    <title>COMRIGHT 379 - Secure Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #d4af37;
-            --gold-light: #f1d592;
-            --bg-dark: #020202;
-            --card-bg: rgba(25, 25, 25, 0.4);
-            --glow: rgba(212, 175, 55, 0.4);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        body { 
-            background: var(--bg-dark); 
-            color: white; 
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #1a1508 0%, #020202 80%);
-            min-height: 100vh;
+        body {
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: #000; /* Fallback color */
+            overflow: hidden;
+            position: relative;
         }
 
-        /* --- LUXURY HEADER --- */
-        header {
-            position: fixed; top: 0; width: 100%; height: 80px;
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(25px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        /* Background dengan Efek Zoom Lambat */
+        .bg-video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), 
+                        url('WhatsApp Image 2026-01-22 at 05.52.14.jpeg');
+            background-size: cover; background-position: center;
+            animation: slowZoom 20s infinite alternate;
+            z-index: -1;
         }
 
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .menu-dots { cursor: pointer; display: flex; flex-direction: column; gap: 6px; width: 30px; }
-        .dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--glow); }
-
-        /* --- VISUALIZER --- */
-        .music-controller-header {
-            display: flex; align-items: center; gap: 10px; cursor: pointer;
-            padding: 8px 15px; border-radius: 20px;
-            background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.1);
-        }
-        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 15px; }
-        .visualizer span { width: 3px; height: 4px; background: #444; border-radius: 1px; transition: 0.3s; }
-
-        .playing .visualizer span {
-            background: var(--gold);
-            animation: bounce 0.8s infinite alternate ease-in-out;
-            box-shadow: 0 0 5px var(--glow);
-        }
-        .playing .visualizer span:nth-child(1) { animation-delay: 0.1s; }
-        .playing .visualizer span:nth-child(2) { animation-delay: 0.3s; }
-        .playing .visualizer span:nth-child(3) { animation-delay: 0.2s; }
-        .playing .visualizer span:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes bounce { 
-            0% { height: 20%; } 
-            100% { height: 100%; } 
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
         }
 
-        .status-dot-text { font-size: 9px; letter-spacing: 1px; font-weight: 700; color: #555; }
-        .playing .status-dot-text { color: var(--gold); }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
-            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(30px);
-            border-right: 1px solid rgba(212, 175, 55, 0.2); z-index: 3000; 
-            transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); padding: 60px 30px;
-        }
-        .sidebar.active { left: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2500; display: none; backdrop-filter: blur(8px); }
-
-        .nav-links { list-style: none; margin-top: 40px; }
-        .nav-links li { border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .nav-links a, .nav-links div.music-btn-sidebar {
-            color: #ccc; text-decoration: none; font-size: 14px; display: flex; 
-            align-items: center; gap: 15px; padding: 15px 0;
-            transition: 0.4s; cursor: pointer;
-        }
-        .nav-links a:hover, .music-btn-sidebar:hover { color: var(--gold); transform: translateX(10px); }
-        .music-btn-sidebar.playing { color: var(--gold); text-shadow: 0 0 10px var(--glow); }
-
-        /* --- HERO & GRID --- */
-        .hero-section { padding: 130px 20px 40px; text-align: center; }
-        .hero-section h1 { 
-            font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 900;
-            background: linear-gradient(to bottom, #fff, var(--gold)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .search-box { max-width: 500px; margin: 30px auto; position: relative; }
-        .search-box input {
-            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.2); 
-            padding: 15px 25px; border-radius: 40px; color: white; outline: none; transition: 0.4s; font-size: 14px;
+        /* Container Login yang Lebih Elegan */
+        .login-container {
+            width: 100%; max-width: 400px; padding: 60px 40px;
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(25px) saturate(150%);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border-radius: 2px;
+            transform: translateY(20px); opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
-        .grid-container {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px; max-width: 1100px; margin: auto; padding: 0 12px 120px;
+        @keyframes fadeInUp {
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        @media (min-width: 768px) {
-            .grid-container { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
-            .hero-section h1 { font-size: 60px; }
+        h2 { 
+            font-family: 'Playfair Display', serif; 
+            color: #d4af37; font-size: 38px; 
+            letter-spacing: 4px; margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
-        .member-card {
-            background: var(--card-bg); border-radius: 15px; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.5s;
-            backdrop-filter: blur(10px); cursor: pointer; text-align: center;
-        }
-        .photo-frame { width: 100%; aspect-ratio: 1/1; background: #080808; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
-        .name-label { padding: 12px 5px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; color: #ddd; text-transform: uppercase; }
-
-        /* --- MODAL --- */
-        .modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(25px); z-index: 4000; justify-content: center; align-items: center; padding: 15px;
-        }
-        .modal-content {
-            background: #0d0d0d; border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; max-width: 400px;
-            border-radius: 30px; position: relative; overflow: hidden; animation: zoomIn 0.3s ease;
-        }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .close-btn { 
-            position: absolute; top: 15px; right: 20px; color: var(--gold); 
-            font-size: 40px; cursor: pointer; z-index: 5000; line-height: 1;
-        }
-        
-        .upload-btn {
-            background: var(--gold); color: black; padding: 16px; width: 100%; 
-            display: block; font-weight: 800; border-radius: 15px; cursor: pointer; text-align: center; margin-top: 20px; font-size: 13px;
+        .subtitle { 
+            color: #d4af37; letter-spacing: 8px; font-size: 10px; 
+            margin-bottom: 40px; opacity: 0.8; font-weight: 300;
         }
 
-        .back-nav-btn {
-            width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); 
-            color: #888; padding: 12px; border-radius: 15px; margin-top: 10px;
-            font-size: 10px; font-weight: 700; letter-spacing: 2px; cursor: pointer;
+        /* Input Styling yang Lebih Modern */
+        .input-group { position: relative; margin-bottom: 20px; }
+
+        input {
+            width: 100%; padding: 15px 10px; background: rgba(255, 255, 255, 0.03);
+            border: none; border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            color: white; text-align: center; outline: none;
+            font-size: 13px; letter-spacing: 2px;
+            transition: 0.4s ease;
         }
 
-        .logo-text span { display: block; color: var(--gold); font-weight: 900; font-size: 14px; letter-spacing: 3px; }
-        .logo-text small { color: #555; font-size: 7px; letter-spacing: 2px; text-transform: uppercase; display: block; }
+        input:focus {
+            border-bottom: 1px solid #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.3); font-size: 11px; text-transform: uppercase; }
+
+        /* Tombol dengan Efek Shimmer */
+        .btn-main {
+            width: 100%; padding: 16px; background: #d4af37; color: black;
+            font-weight: 600; border: none; cursor: pointer; 
+            text-transform: uppercase; letter-spacing: 3px; font-size: 12px;
+            margin-top: 20px; position: relative; overflow: hidden;
+            transition: 0.4s;
+        }
+
+        .btn-main:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .btn-main:active { transform: translateY(0); }
+
+        #error-msg { 
+            color: #ff4d4d; margin-top: 20px; font-size: 10px; 
+            letter-spacing: 2px; display: none;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Loader Overlay */
+        #loader-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.8s;
+        }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop><source src="kisah klasik.mp3" type="audio/mpeg"></audio>
-
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-
-    <header>
-        <div class="header-left">
-            <div class="menu-dots" onclick="toggleSidebar()">
-                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
-            <div class="music-controller-header" id="header-music-btn" onclick="toggleMusic()">
-                <div class="visualizer">
-                    <span></span><span></span><span></span><span></span>
-                </div>
-                <span class="status-dot-text" id="header-music-text">OFF</span>
-            </div>
-        </div>
-        <div class="logo-text" style="text-align: center;">
-            <span>COMRIGHT 379</span>
-            <small>Legacy Collection</small>
-        </div>
-        <div style="width: 45px;"></div>
-    </header>
-
-    <nav class="sidebar" id="sidebar">
-        <h2 style="font-family: 'Playfair Display'; color: var(--gold); font-size: 28px;">LEGACY</h2>
-        <p style="font-size: 8px; color: #444; letter-spacing: 2px; margin-bottom: 30px;">THE ALUMNI ARCHIVE</p>
-        <ul class="nav-links">
-            <li>
-                <a href="social.html">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--gold)" style="display:inline-block; vertical-align:middle;">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.247 2.242 1.308 3.607.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.332 2.633-1.308 3.608-.975.975-2.242 1.247-3.607 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.332-3.608-1.308-.975-.975-1.247-2.242-1.308-3.607-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.247 3.607-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.337-2.618-6.78-6.98-6.98-1.28-.058-1.688-.072-4.947-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    Instagram
-                </a>
-            </li>
-            <li><a href="galeri.html">📸 Memory Gallery</a></li>
-            <li><a href="pesan.html">💌 Messages</a></li>
-            <li><a href="panduan.html">📖 Renungan Masa Lalu</a></li>
-            
-            <li>
-                <div class="music-btn-sidebar" id="side-music-btn" onclick="toggleMusic()">
-                    🎵 <span id="music-status-text">Nyalakan Musik</span>
-                </div>
-            </li>
-            <li>
-                <a href="status.html">
-                    🌐 Public Connection
-                </a>
-            </li>
-            
-            <li style="margin-top: 50px;"><a href="index.html" style="color: #ff4d4d; border: none;">🚪 Logout</a></li>
-        </ul>
-    </nav>
-
-    <div class="hero-section">
-        <h1>The Alumni</h1>
-        <p style="color: #555; font-size: 9px; letter-spacing: 4px; text-transform: uppercase; margin-top: 10px;">Keep the memories alive</p>
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="Cari nama sahabat..." onkeyup="filterAlumni()">
-        </div>
+    <div id="loader-overlay">
+        <div style="color: #d4af37; letter-spacing: 5px; font-size: 10px; animation: pulse 1.5s infinite;">INITIALIZING...</div>
     </div>
 
-    <main><div class="grid-container" id="grid"></div></main>
+    <div class="bg-video"></div>
 
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">×</span>
-            <div id="photo-container" style="width: 100%; height: 350px; background: #050505; display: flex; align-items: center; justify-content: center;">
-                <img id="profile-img" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                <span id="no-photo-icon" style="font-size: 60px; opacity: 0.1;">👤</span>
-            </div>
-            <div style="padding: 25px;">
-                <h2 id="modal-name" style="font-family: 'Playfair Display'; font-size: 24px; color: white; margin-bottom: 5px;"></h2>
-                <p style="color: var(--gold); font-size: 9px; letter-spacing: 2px; margin-bottom: 20px; font-weight: 600;">COMRIGHT 379 MEMBER</p>
-                
-                <label class="upload-btn">
-                    UPDATE PHOTO
-                    <input type="file" id="file-input" style="display:none;" accept="image/*">
-                </label>
-                <button class="back-nav-btn" onclick="closeModal()">KEMBALI KE DAFTAR</button>
-                <button onclick="deletePhoto()" style="width: 100%; background: transparent; border: none; color: #333; font-size: 10px; margin-top: 15px; cursor: pointer; letter-spacing: 1px;">REMOVE DATA</button>
-            </div>
+    <div class="login-container">
+        <h2>COMRIGHT</h2>
+        <p class="subtitle">CLASS OF 379</p>
+        
+        <div class="input-group">
+            <input type="text" id="id-angkatan" placeholder="Access ID" autocomplete="off">
         </div>
+        
+        <div class="input-group">
+            <input type="password" id="pass-angkatan" placeholder="Secret Password">
+        </div>
+
+        <button class="btn-main" onclick="checkLogin()">Enter Experience</button>
+        <p id="error-msg">ACCESS DENIED • INVALID CREDENTIALS</p>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyALj_Gcwf_jwow1MPVZ0_xpTvvyB_bwEXo",
-            authDomain: "comright379.firebaseapp.com",
-            databaseURL: "https://comright379-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "comright379",
-            storageBucket: "comright379.firebasestorage.app",
-            messagingSenderId: "602850111912",
-            appId: "1:602850111912:web:1372097fa168af0668ad9d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        const names = ["Ahmad Syahid", "Jaky Abbad Zaidan", "Aditya Septian Nugraha", "Adli Agustian", "Agung Prasetya", "Ahmad Taufiqurrohman", "Fatkhurohman", "Faturrohman", "Haeri Ibanes", "Ahmad Kimi Muzhaffar", "Niko Reza Setiawan", "Aditia Zaky Pratama", "Satria", "Muhammad Fikri Soleh", "Muhammad Nazril Ilham", "Muhammad Rassya", "Samsul Maarif", "Wisnu Fuad Hilmi", "Sandra", "Tedi Setiawan", "Muhammad Yusuf", "Ryo Ferdinand", "Rizky Halaluddin"];
-        let alumniData = {};
-
-        const audio = document.getElementById('bg-music');
-
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play().then(() => {
-                    localStorage.setItem('musicStatus', 'playing');
-                    syncMusicUI();
-                });
-            } else {
-                audio.pause();
-                localStorage.setItem('musicStatus', 'paused');
-                syncMusicUI();
-            }
-        }
-
-        function syncMusicUI() {
-            const sideBtn = document.getElementById('side-music-btn');
-            const sideTxt = document.getElementById('music-status-text');
-            const headBtn = document.getElementById('header-music-btn');
-            const headTxt = document.getElementById('header-music-text');
-
-            if (!audio.paused) {
-                if(sideTxt) sideTxt.innerText = "Matikan Musik";
-                if(sideBtn) sideBtn.classList.add('playing');
-                if(headBtn) headBtn.classList.add('playing');
-                if(headTxt) headTxt.innerText = "ON";
-            } else {
-                if(sideTxt) sideTxt.innerText = "Nyalakan Musik";
-                if(sideBtn) sideBtn.classList.remove('playing');
-                if(headBtn) headBtn.classList.remove('playing');
-                if(headTxt) headTxt.innerText = "OFF";
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const status = localStorage.getItem('musicStatus');
-            const savedTime = localStorage.getItem('musicTime');
-            if (savedTime) audio.currentTime = parseFloat(savedTime);
-            if (status === 'playing') {
-                audio.play().then(syncMusicUI).catch(() => {
-                    document.body.addEventListener('click', () => {
-                        if(localStorage.getItem('musicStatus') === 'playing' && audio.paused) audio.play().then(syncMusicUI);
-                    }, { once: true });
-                });
-            }
+        // Hapus Loader setelah halaman siap
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader-overlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                }, 800);
+            }, 1000);
         });
 
-        setInterval(() => { if (!audio.paused) localStorage.setItem('musicTime', audio.currentTime); }, 100);
-
-        window.onload = () => {
-            db.ref('photos/').on('value', s => { 
-                alumniData = s.val() || {}; 
-                renderGrid(names); 
-            });
-        };
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ol = document.getElementById('overlay');
-            sb.classList.toggle('active');
-            ol.style.display = sb.classList.contains('active') ? 'block' : 'none';
-        }
-
-        function renderGrid(list) {
-            const grid = document.getElementById('grid');
-            if(!grid) return;
-            grid.innerHTML = list.map((name) => {
-                const originalIndex = names.indexOf(name);
-                const img = alumniData[`img-${originalIndex}`];
-                return `
-                    <div class="member-card" onclick="openModal('${name}', ${originalIndex})">
-                        <div class="photo-frame">${img ? `<img src="${img}">` : '<span style="opacity:0.1; font-size:40px;">👤</span>'}</div>
-                        <div class="name-label">${name}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterAlumni() {
-            const q = document.getElementById('search-input').value.toLowerCase();
-            renderGrid(names.filter(n => n.toLowerCase().includes(q)));
-        }
-
-        let selIdx = null;
-        function openModal(name, i) {
-            selIdx = i;
-            document.getElementById('modal').style.display = 'flex';
-            document.getElementById('modal-name').innerText = name;
-            const img = alumniData[`img-${i}`];
-            const imgEl = document.getElementById('profile-img');
-            const iconEl = document.getElementById('no-photo-icon');
-            if(img) { imgEl.src = img; imgEl.style.display = 'block'; iconEl.style.display = 'none'; }
-            else { imgEl.style.display = 'none'; iconEl.style.display = 'block'; }
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-        document.getElementById('file-input').onchange = (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const img = new Image();
-                img.src = ev.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 500; canvas.height = 500;
-                    ctx.drawImage(img, 0, 0, 500, 500);
-                    db.ref('photos/img-' + selIdx).set(canvas.toDataURL('image/jpeg', 0.8));
-                    closeModal();
-                };
-            };
-            reader.readAsDataURL(file);
-        };
-
-        function deletePhoto() {
-            if(confirm("Hapus data foto profil ini?")) {
-                db.ref('photos/img-' + selIdx).remove();
-                closeModal();
+        function checkLogin() {
+            const id = document.getElementById('id-angkatan').value;
+            const pass = document.getElementById('pass-angkatan').value;
+            const btn = document.querySelector('.btn-main');
+            const error = document.getElementById('error-msg');
+            
+            // Credential Validation
+            if (id === "cmr379" && pass === "comright379") {
+                btn.innerText = "AUTHENTICATING...";
+                btn.style.background = "#fff";
+                
+                // Simpan status login di session
+                sessionStorage.setItem('isLoggedIn', 'true');
+                
+                setTimeout(() => {
+                    window.location.href = "main.html"; 
+                }, 1500);
+            } else {
+                error.style.display = 'block';
+                // Reset form
+                document.getElementById('pass-angkatan').value = "";
+                setTimeout(() => { error.style.display = 'none'; }, 3000);
             }
         }
+
+        // Pulse Animation for Loader
+        document.head.insertAdjacentHTML('beforeend', `<style>@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }</style>`);
     </script>
 </body>
 </html>
