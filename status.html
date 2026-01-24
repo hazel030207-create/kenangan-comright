@@ -27,6 +27,34 @@
             overflow-x: hidden;
         }
 
+        /* --- LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); 
+            z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loading-logo {
+            width: 180px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.3));
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .spinner {
+            width: 35px; height: 35px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* --- AUTH SCREEN --- */
         #auth-screen { 
             position: fixed; width: 100%; height: 100%; background: var(--dark);
@@ -100,18 +128,37 @@
         #preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; display: none; border: 1px solid var(--gold); }
         .btn-upload { background: #222; color: var(--gold); padding: 10px 15px; border-radius: 10px; border: 1px solid #444; cursor: pointer; font-size: 13px; }
 
-        .post-card { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 25px; border: 1px solid #222; position: relative; animation: fadeIn 0.5s ease; }
+        .post-card { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 25px; border: 1px solid #222; position: relative; animation: fadeIn 0.5s ease; transition: 0.3s; }
+        .post-card:hover { border-color: var(--gold); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.05); }
         .post-img-display { width: 100%; border-radius: 15px; margin: 15px 0; border: 1px solid #333; object-fit: cover; max-height: 500px; }
-        .post-actions { display: flex; gap: 25px; margin: 15px 0; border-top: 1px solid #222; padding-top: 15px; font-size: 14px; }
+        
+        /* --- COMMENT STYLES --- */
+        .comment-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #222; }
+        .comment-item { background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 13px; border-left: 2px solid var(--gold); position: relative; }
+        .comment-user { color: var(--gold); font-weight: bold; font-size: 11px; margin-bottom: 2px; display: block; }
+        .comment-input-group { display: flex; gap: 10px; margin-top: 15px; }
+        .inp-comment { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 8px 12px; color: white; font-size: 13px; outline: none; }
+        .btn-comment { background: var(--gold); color: black; border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-comment:hover { opacity: 0.8; }
+
+        .post-actions { display: flex; gap: 25px; margin: 15px 0 10px; border-top: 1px solid #222; padding-top: 15px; font-size: 14px; }
         .action-item { cursor: pointer; color: #888; display: flex; align-items: center; gap: 6px; }
         .action-item:hover { color: var(--gold); }
-        .admin-del { color: #ff4444; font-size: 13px; cursor: pointer; float: right; }
+        .admin-del { color: #ff4444; font-size: 13px; cursor: pointer; float: right; margin-left: 10px; }
         .badge-admin { background: var(--gold); color: black; font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 800; margin-left: 5px; }
+        .timestamp { font-size: 9px; color: #555; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+    <div id="loading-screen">
+        <img src="aehoki.webp" class="loading-logo" alt="Alter Ego Logo">
+        <div class="spinner"></div>
+        <p style="font-family: 'Cinzel'; color: var(--gold); letter-spacing: 3px; font-size: 12px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);">MENUNGGU KEMENANGAN ALTER EGO...</p>
+        <div style="position: absolute; bottom: 30px; font-size: 10px; color: #444; letter-spacing: 2px;">379 HUB • ELITE SOCIAL HUB</div>
+    </div>
 
     <div id="auth-screen">
         <div class="auth-card" id="login-container">
@@ -138,7 +185,7 @@
             <span class="nav-text" style="font-family: 'Cinzel'; color: var(--gold); font-size: 20px;">379 ELITE</span>
         </div>
         
-        <a href="main.html" class="nav-item" onclick="location.reload()"><i class="fa-solid fa-house"></i><span class="nav-text">Beranda</span></a>
+        <a href="#" class="nav-item" onclick="location.reload()"><i class="fa-solid fa-house"></i><span class="nav-text">Beranda</span></a>
         <a href="https://www.tiktok.com/" target="_blank" class="nav-item"><i class="fa-brands fa-tiktok"></i><span class="nav-text">TikTok</span></a>
         <a href="https://www.youtube.com/" target="_blank" class="nav-item"><i class="fa-brands fa-youtube"></i><span class="nav-text">YouTube</span></a>
         <a href="https://www.instagram.com/" target="_blank" class="nav-item"><i class="fa-brands fa-instagram"></i><span class="nav-text">Instagram</span></a>
@@ -208,6 +255,21 @@
         let base64Image = ""; 
         const ADMIN_ID = "haeri030207", ADMIN_PW = "haeri030207";
 
+        function timeSince(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " tahun lalu";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " bulan lalu";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " hari lalu";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " jam lalu";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " menit lalu";
+            return "baru saja";
+        }
+
         function previewFile() {
             const preview = document.getElementById('preview-img');
             const file = document.getElementById('file-upload').files[0];
@@ -259,6 +321,7 @@
 
         function launchApp() {
             document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'flex'; 
             document.getElementById('sidebar-nav').style.display = 'flex';
             document.getElementById('main-app').style.display = 'block';
             document.getElementById('user-display').innerText = currentUser;
@@ -306,6 +369,23 @@
                 document.getElementById('post-text').value = "";
                 document.getElementById('preview-img').style.display = 'none';
                 base64Image = "";
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        }
+
+        function submitComment(postId) {
+            const input = document.getElementById(`cm-input-${postId}`);
+            const text = input.value.trim();
+            if(!text) return;
+
+            const commentData = {
+                user: currentUser,
+                text: text,
+                timestamp: Date.now()
+            };
+
+            db.ref(`posts/${postId}/comments`).push(commentData).then(() => {
+                input.value = "";
             });
         }
 
@@ -321,19 +401,49 @@
                 postsArray.forEach(p => {
                     let badge = p.isAdmin ? `<span class="badge-admin">VIP ADMIN</span>` : `<span style="font-size:9px; color:#555; margin-left:5px;">[MEMBER]</span>`;
                     let postImg = p.image ? `<img src="${p.image}" class="post-img-display">` : "";
-                    let delBtn = isAdmin ? `<span class="admin-del" onclick="deletePost('${p.id}')"><i class="fa-solid fa-trash"></i></span>` : "";
+                    let delBtn = isAdmin ? `<span class="admin-del" onclick="deletePost('${p.id}')" title="Hapus Post"><i class="fa-solid fa-trash"></i></span>` : "";
+                    let displayTime = timeSince(p.timestamp);
+
+                    let commentsHTML = "";
+                    if(p.comments) {
+                        Object.keys(p.comments).forEach(cId => {
+                            const c = p.comments[cId];
+                            let delCommentBtn = isAdmin ? `<i class="fa-solid fa-xmark admin-del" style="font-size:10px" onclick="deleteComment('${p.id}', '${cId}')"></i>` : "";
+                            commentsHTML += `
+                                <div class="comment-item">
+                                    ${delCommentBtn}
+                                    <span class="comment-user">@${c.user}</span>
+                                    <span>${c.text}</span>
+                                </div>`;
+                        });
+                    }
 
                     list.innerHTML += `
                         <div class="post-card">
                             ${delBtn}
-                            <div><span style="font-weight:600; color:var(--gold);">@${p.user} ${badge}</span></div>
+                            <div>
+                                <span style="font-weight:600; color:var(--gold);">@${p.user} ${badge}</span>
+                                <br><span class="timestamp">${displayTime}</span>
+                            </div>
                             <div style="font-size:15px; margin-top:12px; color:#eee;">${p.content}</div>
                             ${postImg}
                             <div class="post-actions">
                                 <span class="action-item" onclick="toggleLike('${p.id}', ${p.likes})"><i class="fa-solid fa-heart"></i> ${p.likes}</span>
                             </div>
+
+                            <div class="comment-section">
+                                <div id="cm-list-${p.id}">${commentsHTML}</div>
+                                <div class="comment-input-group">
+                                    <input type="text" id="cm-input-${p.id}" class="inp-comment" 
+                                           placeholder="Tulis komentar..." 
+                                           onkeypress="if(event.key === 'Enter') submitComment('${p.id}')">
+                                    <button class="btn-comment" onclick="submitComment('${p.id}')"><i class="fa-solid fa-paper-plane"></i></button>
+                                </div>
+                            </div>
                         </div>`;
                 });
+
+                document.getElementById('loading-screen').style.display = 'none';
             });
         }
 
@@ -342,7 +452,13 @@
         }
 
         function deletePost(postId) {
-            if(confirm("Hapus postingan ini?")) db.ref('posts/' + postId).remove();
+            if(confirm("Hapus postingan ini secara permanen?")) db.ref('posts/' + postId).remove();
+        }
+
+        function deleteComment(postId, commentId) {
+            if(confirm("Hapus komentar ini?")) {
+                db.ref(`posts/${postId}/comments/${commentId}`).remove();
+            }
         }
     </script>
 </body>
