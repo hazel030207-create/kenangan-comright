@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>379 - Elite Social Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --gold: #d4af37; 
+            --dark: #0a0a0a; 
+            --card: #151515; 
+            --sidebar: #0d0d0d; 
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: var(--dark); 
+            color: #e0e0e0; 
+            background: radial-gradient(circle at top right, #1a1a1a 0%, #050505 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* --- AUTH SCREEN --- */
+        #auth-screen { 
+            position: fixed; width: 100%; height: 100%; background: var(--dark);
+            z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-card { 
+            background: var(--card); padding: 40px; border-radius: 30px; 
+            border: 1px solid var(--gold); width: 100%; max-width: 400px; 
+            text-align: center; box-shadow: 0 0 30px rgba(212, 175, 55, 0.15); 
+        }
+        .auth-card h1 { font-family: 'Cinzel'; color: var(--gold); margin-bottom: 25px; letter-spacing: 2px; }
+        .inp-auth { 
+            width: 100%; padding: 14px; margin-bottom: 12px; background: #222; 
+            border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s;
+        }
+        .inp-auth:focus { border-color: var(--gold); background: #282828; }
+        .btn-gold { 
+            width: 100%; padding: 14px; background: var(--gold); border: none; 
+            border-radius: 12px; font-weight: bold; cursor: pointer; color: black;
+            transition: 0.4s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        nav { 
+            width: 80px; background: var(--sidebar); border-right: 1px solid rgba(212, 175, 55, 0.2);
+            height: 100vh; position: fixed; left: 0; top: 0; display: none;
+            flex-direction: column; align-items: center; padding-top: 25px; gap: 20px;
+            z-index: 1000; transition: width 0.3s;
+        }
+        @media (min-width: 768px) { nav { width: 240px; align-items: flex-start; padding-left: 15px; } }
+
+        .nav-item { 
+            color: #aaa; text-decoration: none; display: flex; align-items: center; 
+            gap: 15px; font-size: 16px; transition: 0.3s; cursor: pointer; width: 90%;
+            padding: 12px; border-radius: 12px;
+        }
+        .nav-item i { width: 25px; text-align: center; color: var(--gold); font-size: 18px; }
+        .nav-text { display: none; font-weight: 500; }
+        @media (min-width: 768px) { .nav-text { display: block; } }
+        .nav-item:hover { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; margin-left: 0; padding: 20px; display: none; transition: 0.3s; }
+        @media (min-width: 80px) { main { margin-left: 80px; } }
+        @media (min-width: 768px) { main { margin-left: 240px; } }
+
+        header { 
+            max-width: 700px; margin: 0 auto 30px; display: flex; 
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 15px;
+        }
+
+        .feed { max-width: 700px; margin: 0 auto; }
+        .post-input-box { 
+            background: var(--card); padding: 25px; border-radius: 24px; 
+            margin-bottom: 30px; border: 1px solid #222;
+        }
+        .inp-text { 
+            width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; 
+            border-radius: 12px; color: white; resize: none; outline: none; margin-bottom: 12px; 
+        }
+
+        .upload-area { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        #preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; display: none; border: 1px solid var(--gold); }
+        .btn-upload { background: #222; color: var(--gold); padding: 10px 15px; border-radius: 10px; border: 1px solid #444; cursor: pointer; font-size: 13px; }
+
+        .post-card { 
+            background: var(--card); padding: 20px; border-radius: 24px; 
+            margin-bottom: 25px; border: 1px solid #222; position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .badge-admin { background: var(--gold); color: black; font-size: 10px; padding: 2px 8px; border-radius: 5px; font-weight: 800; margin-left: 5px; }
+        .post-img-display { width: 100%; border-radius: 15px; margin: 15px 0; border: 1px solid #333; object-fit: cover; max-height: 500px; }
+        .post-actions { display: flex; gap: 25px; margin: 15px 0; border-top: 1px solid #222; padding-top: 15px; font-size: 14px; }
+        .action-item { cursor: pointer; color: #888; display: flex; align-items: center; gap: 6px; }
+        .action-item:hover { color: var(--gold); }
+        .admin-del { color: #ff4444; font-size: 13px; cursor: pointer; float: right; transition: 0.2s; }
+
+        .comment-item { background: var(--glass); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 12.5px; border-left: 2px solid var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="auth-card" id="login-container">
+            <h1 style="font-size: 2.5rem;">379 HUB</h1>
+            <input type="text" id="log-user" class="inp-auth" placeholder="Username (ID)">
+            <input type="password" id="log-pass" class="inp-auth" placeholder="Password">
+            <button class="btn-gold" onclick="handleLogin()">Buka Gerbang</button>
+            <p onclick="toggleRegister()" style="font-size: 12px; margin-top: 20px; color: #888; cursor: pointer; text-decoration: underline;">Belum jadi member? Daftar di sini</p>
+        </div>
+
+        <div class="auth-card" id="reg-container" style="display: none;">
+            <h1>REGISTRASI</h1>
+            <input type="text" id="reg-name" class="inp-auth" placeholder="Nama Lengkap">
+            <input type="text" id="reg-id" class="inp-auth" placeholder="Username ID Baru">
+            <input type="password" id="reg-pw" class="inp-auth" placeholder="Password Baru">
+            <button class="btn-gold" onclick="handleRegister()">Daftar Keanggotaan</button>
+            <p onclick="toggleRegister()" style="font-size: 12px; margin-top: 20px; color: #888; cursor: pointer; text-decoration: underline;">Sudah ada akun? Masuk</p>
+        </div>
+    </div>
+
+    <nav id="sidebar-nav">
+        <div class="nav-item" style="margin-bottom: 25px; pointer-events: none;">
+            <i class="fa-solid fa-crown" style="font-size: 28px;"></i>
+            <span class="nav-text" style="font-family: 'Cinzel'; color: var(--gold); font-size: 20px;">379 ELITE</span>
+        </div>
+        
+        <a href="main.html" class="nav-item" onclick="location.reload()">
+            <i class="fa-solid fa-house"></i>
+            <span class="nav-text">Beranda</span>
+        </a>
+
+        <a href="https://www.tiktok.com/" target="_blank" class="nav-item">
+            <i class="fa-brands fa-tiktok"></i>
+            <span class="nav-text">TikTok</span>
+        </a>
+
+        <a href="https://www.youtube.com/" target="_blank" class="nav-item">
+            <i class="fa-brands fa-youtube"></i>
+            <span class="nav-text">YouTube</span>
+        </a>
+
+        <a href="https://www.instagram.com/" target="_blank" class="nav-item">
+            <i class="fa-brands fa-instagram"></i>
+            <span class="nav-text">Instagram</span>
+        </a>
+
+        <a href="intent://#Intent;package=com.mobile.legends;scheme=mobilelegends;end" class="nav-item">
+            <i class="fa-solid fa-gamepad"></i>
+            <span class="nav-text">Mobile Legends</span>
+        </a>
+
+        <a href="intent://#Intent;package=com.roblox.client;scheme=roblox;end" class="nav-item">
+            <i class="fa-solid fa-cube"></i>
+            <span class="nav-text">Roblox</span>
+        </a>
+    </nav>
+
+    <main id="main-app">
+        <header>
+            <div>
+                <h2 style="font-family: 'Cinzel'; color: var(--gold); letter-spacing: 1px;">Elite Feed</h2>
+                <p id="greet-text" style="font-size: 11px; color: #777; font-weight: 300;"></p>
+            </div>
+            <div style="text-align: right;">
+                <span id="user-display" style="font-size: 13px; font-weight: 600; color: var(--gold);"></span>
+                <i class="fa-solid fa-right-from-bracket" onclick="location.reload()" style="font-size: 14px; margin-left: 15px; cursor: pointer; color: #ff4444;"></i>
+            </div>
+        </header>
+
+        <div class="feed">
+            <div class="post-input-box">
+                <textarea id="post-text" class="inp-text" placeholder="Bagikan momen elitmu..." rows="3"></textarea>
+                <div class="upload-area">
+                    <label for="file-upload" class="btn-upload">
+                        <i class="fa-solid fa-camera"></i> Pilih Foto
+                    </label>
+                    <input type="file" id="file-upload" accept="image/*" style="display:none;" onchange="previewFile()">
+                    <img id="preview-img" src="" alt="preview">
+                    <span id="file-name" style="font-size: 10px; color: #666;">Mendukung Galeri Android</span>
+                </div>
+                <button class="btn-gold" onclick="submitPost()">Publikasikan Momen</button>
+            </div>
+            <div id="post-list"></div>
+        </div>
+    </main>
+
+    <script>
+        let currentUser = "";
+        let isAdmin = false;
+        let posts = [];
+        let base64Image = ""; 
+        const ADMIN_ID = "haeri030207", ADMIN_PW = "haeri030207";
+
+        function previewFile() {
+            const preview = document.getElementById('preview-img');
+            const file = document.getElementById('file-upload').files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                base64Image = reader.result;
+            }
+            if (file) {
+                reader.readAsDataURL(file);
+                document.getElementById('file-name').innerText = file.name;
+            }
+        }
+
+        function toggleRegister() {
+            const loginC = document.getElementById('login-container');
+            const regC = document.getElementById('reg-container');
+            loginC.style.display = loginC.style.display === 'none' ? 'block' : 'none';
+            regC.style.display = regC.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value;
+            if(!name) return alert("Isi data!");
+            alert("Member " + name + " berhasil terdaftar!");
+            toggleRegister();
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('log-user').value.trim();
+            const pass = document.getElementById('log-pass').value.trim();
+            if (user === ADMIN_ID && pass === ADMIN_PW) {
+                isAdmin = true; currentUser = "Haeri (ADMIN)";
+            } else if(user && pass) {
+                isAdmin = false; currentUser = user;
+            } else return alert("Gagal masuk!");
+
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('sidebar-nav').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('user-display').innerText = currentUser;
+            
+            const hour = new Date().getHours();
+            let greet = hour < 12 ? "Selamat Pagi" : (hour < 18 ? "Selamat Sore" : "Selamat Malam");
+            document.getElementById('greet-text').innerText = greet + ", selamat datang di lingkaran elit.";
+            renderPosts();
+        }
+
+        function submitPost() {
+            const text = document.getElementById('post-text').value;
+            if (!text.trim() && !base64Image) return alert("Isi konten!");
+            const newPost = {
+                id: Date.now(),
+                user: currentUser,
+                isAdmin: isAdmin,
+                content: text,
+                image: base64Image,
+                likes: 0,
+                comments: []
+            };
+            posts.unshift(newPost);
+            document.getElementById('post-text').value = "";
+            document.getElementById('preview-img').style.display = 'none';
+            base64Image = ""; 
+            renderPosts();
+        }
+
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            post.likes++;
+            renderPosts();
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`in-com-${postId}`);
+            if (!input.value.trim()) return;
+            const post = posts.find(p => p.id === postId);
+            post.comments.push({ user: currentUser, text: input.value });
+            input.value = "";
+            renderPosts();
+        }
+
+        function renderPosts() {
+            const list = document.getElementById('post-list');
+            list.innerHTML = posts.length === 0 ? `<p style="text-align:center; color:#444; margin-top:50px;">Belum ada postingan.</p>` : "";
+            
+            posts.forEach(p => {
+                let commentsHtml = p.comments.map(c => `<div class="comment-item"><b>@${c.user}</b>: ${c.text}</div>`).join("");
+                let badge = p.isAdmin ? `<span class="badge-admin">VIP ADMIN</span>` : `<span style="font-size:9px; color:#555; margin-left:5px;">[MEMBER]</span>`;
+                let postImg = p.image ? `<img src="${p.image}" class="post-img-display">` : "";
+                
+                list.innerHTML += `
+                    <div class="post-card">
+                        <div><span style="font-weight:600; color:var(--gold);">@${p.user} ${badge}</span></div>
+                        <div style="font-size:15px; margin-top:12px; color:#eee;">${p.content}</div>
+                        ${postImg}
+                        <div class="post-actions">
+                            <span class="action-item" onclick="toggleLike(${p.id})"><i class="fa-solid fa-heart"></i> ${p.likes}</span>
+                            <span class="action-item"><i class="fa-solid fa-comment"></i> ${p.comments.length}</span>
+                        </div>
+                        <div class="comment-list">${commentsHtml}</div>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <input type="text" id="in-com-${p.id}" class="inp-auth" placeholder="Balas..." style="margin:0; font-size:12px; padding:10px; flex:1;">
+                            <button onclick="addComment(${p.id})" style="background:var(--gold); border:none; padding:0 15px; border-radius:10px; cursor:pointer;">➤</button>
+                        </div>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
